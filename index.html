@@ -1,52 +1,103 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>SkyFightPlus</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap');
+
     body {
       margin: 0;
-      font-family: Arial;
-      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-      color: white;
+      font-family: 'Orbitron', sans-serif;
+      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+      color: #ffffff;
       text-align: center;
-      padding: 40px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
     }
+
     h1 {
-      font-size: 50px;
+      font-size: 60px;
+      color: #00f0ff;
+      text-shadow: 0 0 15px #00f0ff, 0 0 30px #00f0ff;
+      margin-bottom: 5px;
     }
+
+    p.subtitle {
+      font-size: 18px;
+      color: #a0e0ff;
+      margin-bottom: 30px;
+    }
+
     .box {
-      background: rgba(255,255,255,0.1);
-      padding: 30px;
-      border-radius: 15px;
-      width: 400px;
-      margin: auto;
+      background: rgba(0,0,0,0.5);
+      padding: 40px;
+      border-radius: 20px;
+      width: 450px;
+      max-width: 90%;
+      box-shadow: 0 0 40px rgba(0, 255, 255, 0.3);
     }
-    input, button {
-      margin: 10px;
+
+    input[type="file"], input[type="number"] {
+      width: 80%;
       padding: 10px;
-      border-radius: 8px;
+      margin: 15px 0;
+      border-radius: 10px;
       border: none;
       font-size: 16px;
     }
+
     button {
-      background: cyan;
+      background: #00f0ff;
+      color: #000;
+      font-weight: bold;
+      font-size: 18px;
+      padding: 12px 25px;
+      margin-top: 20px;
+      border: none;
+      border-radius: 12px;
       cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 20px #00f0ff;
+    }
+
+    button:hover {
+      background: #00d0ff;
+      box-shadow: 0 0 30px #00f0ff, 0 0 60px #00f0ff;
+      transform: scale(1.05);
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      font-size: 16px;
+      color: #80dfff;
     }
   </style>
 </head>
 <body>
 
 <h1>SkyFightPlus</h1>
-<p>Sponsored by SkyFightPlus</p>
+<p class="subtitle">Sponsored by SkyFightPlus</p>
 
 <div class="box">
-  <input type="file" id="song1" accept="audio/*"><br>
-  <input type="file" id="song2" accept="audio/*"><br>
-  <input type="file" id="ad1" accept="audio/*"><br>
+  <label>Song 1</label>
+  <input type="file" id="song1" accept="audio/*">
 
-  <input type="number" id="interval" value="30"> seconds<br>
+  <label>Song 2</label>
+  <input type="file" id="song2" accept="audio/*">
 
-  <button onclick="start()">Start</button>
+  <label>Ad 1</label>
+  <input type="file" id="ad1" accept="audio/*">
+
+  <label>Ad Interval (seconds)</label>
+  <input type="number" id="interval" value="30">
+
+  <button onclick="startPlayer()">Start</button>
 </div>
 
 <script>
@@ -57,21 +108,25 @@ let currentIndex = 0;
 let audio = new Audio();
 let adTimer;
 
-function start() {
+function startPlayer() {
   const s1 = document.getElementById("song1").files[0];
   const s2 = document.getElementById("song2").files[0];
   const adFile = document.getElementById("ad1").files[0];
   intervalTime = document.getElementById("interval").value * 1000;
 
   if (!s1 || !s2 || !adFile) {
-    alert("Upload all files first!");
+    alert("Please upload all files first!");
     return;
   }
 
+  // Shuffle songs
   songs = [URL.createObjectURL(s1), URL.createObjectURL(s2)];
   songs.sort(() => Math.random() - 0.5);
+
+  // Ad
   ad = URL.createObjectURL(adFile);
 
+  // Start playing
   playSong();
   startAdTimer();
 }
