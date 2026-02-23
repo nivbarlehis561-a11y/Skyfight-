@@ -4,414 +4,337 @@
 <meta charset="UTF-8">
 <title>SkyFightPlus</title>
 <style>
-/* ========================
-   GLOBAL STYLES
-======================== */
-body {
+  /* GENERAL BODY */
+  body {
     margin: 0;
-    font-family: 'Arial', sans-serif;
-    background: linear-gradient(135deg, #0f0f1f, #1b1b2e);
-    color: white;
-    overflow-x: hidden;
-}
-
-h1, h2 {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #000000, #0f0f0f);
+    color: #00ff00;
     text-align: center;
-}
+    padding: 20px;
+  }
 
-h1 {
-    font-size: 60px;
-    margin-top: 20px;
-    text-shadow: 0 0 20px cyan;
-}
+  h1 {
+    font-size: 48px;
+    margin-bottom: 10px;
+    text-shadow: 0 0 10px #00ff00;
+  }
 
-h2 {
-    font-size: 24px;
-    margin-bottom: 20px;
-}
-
-button, input[type=number], input[type=file] {
-    border: none;
-    border-radius: 8px;
-    padding: 10px 15px;
-    margin: 5px;
-    font-size: 16px;
-    transition: 0.3s;
-    cursor: pointer;
-}
-
-button:hover {
-    background: #00ffff;
-    color: black;
-    box-shadow: 0 0 15px cyan;
-}
-
-.container {
-    width: 800px;
-    max-width: 95%;
-    margin: auto;
-    background: rgba(255,255,255,0.05);
-    padding: 30px;
+  /* MAIN MENU BOX */
+  .menu-box {
+    background: rgba(0,255,0,0.05);
+    border: 2px solid #00ff00;
     border-radius: 15px;
-    box-shadow: 0 0 20px rgba(0,255,255,0.2);
-}
+    padding: 30px;
+    margin: 20px auto;
+    width: 600px;
+    box-shadow: 0 0 20px #00ff00;
+  }
 
-/* ========================
-   MAIN MENU STYLES
-======================== */
-#mainMenu {
-    display: block;
-}
-
-.fileList {
-    margin-top: 10px;
+  /* SECTIONS */
+  .section {
     margin-bottom: 20px;
-}
+    padding: 15px;
+    border: 1px solid #00ff00;
+    border-radius: 10px;
+    background: rgba(0,255,0,0.03);
+  }
 
-.fileItem {
-    background: rgba(0,255,255,0.1);
-    padding: 8px;
-    border-radius: 5px;
-    margin-bottom: 5px;
+  .section h2 {
+    margin-top: 0;
+    text-shadow: 0 0 5px #00ff00;
+  }
+
+  /* BUTTONS */
+  button {
+    margin: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    background-color: #00ff00;
+    color: #000;
+    font-weight: bold;
+    text-shadow: 0 0 5px #000;
+    transition: 0.3s;
+  }
+
+  button:hover {
+    background-color: #00cc00;
+  }
+
+  /* LIST ITEMS */
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  li {
+    margin: 5px 0;
+    padding: 5px;
+    border: 1px solid #00ff00;
+    border-radius: 8px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-}
+    background: rgba(0,255,0,0.05);
+  }
 
-.fileItem button {
-    margin: 0 0 0 10px;
-    padding: 5px 8px;
-}
+  li span {
+    flex-grow: 1;
+    text-align: left;
+    padding-left: 10px;
+  }
 
-/* ========================
-   PLAYER STYLES
-======================== */
-#playerPage {
-    display: none;
-    text-align: center;
-}
-
-#videoContainer {
+  /* PLAYER VIDEO */
+  #player-container {
+    width: 80%;
+    max-width: 800px;
+    height: 450px;
     margin: 20px auto;
-    width: 720px;
-    max-width: 95%;
     background: black;
+    border: 2px solid #00ff00;
     border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 0 20px cyan;
-}
+    box-shadow: 0 0 20px #00ff00;
+    position: relative;
+  }
 
-#mediaPlayer {
+  video, audio {
     width: 100%;
-    max-height: 480px;
-}
+    height: 100%;
+    border-radius: 10px;
+    background: black;
+  }
 
-#controls {
-    margin-top: 15px;
-}
-
-#controls button, #controls input[type=range] {
-    margin: 5px;
-}
-
-/* ========================
-   OPTIONS PAGE STYLES
-======================== */
-#optionsPage {
-    display: none;
-    text-align: center;
-}
-
-label {
-    display: block;
+  /* TIMER DISPLAY */
+  #ad-timer {
     margin-top: 10px;
-}
+    font-size: 20px;
+    text-shadow: 0 0 5px #00ff00;
+  }
 
-/* ========================
-   COUNTDOWN STYLE
-======================== */
-#adCountdown {
-    font-size: 24px;
-    margin-top: 15px;
-    text-shadow: 0 0 15px cyan;
-}
+  /* OPTIONS */
+  .options input[type=number] {
+    width: 60px;
+    text-align: center;
+    margin-left: 5px;
+  }
+
 </style>
 </head>
 <body>
 
 <h1>SkyFightPlus</h1>
-<h2>Sponsored by SkyFightPlus</h2>
+<p>Sponsored by SkyFightPlus</p>
 
-<!-- ========================
-     MAIN MENU
-======================== -->
-<div id="mainMenu" class="container">
-    <h2>Main Menu</h2>
+<div class="menu-box">
+  <!-- SONG SECTION -->
+  <div class="section" id="songs-section">
+    <h2>Songs / Videos</h2>
+    <button onclick="addSong()">Add Song / Video</button>
+    <button onclick="clearSongs()">Clear All</button>
+    <ul id="songs-list"></ul>
+  </div>
 
-    <button onclick="showPage('playerPage')">Go to Player</button>
-    <button onclick="showPage('optionsPage')">Options</button>
+  <!-- AD SECTION -->
+  <div class="section" id="ads-section">
+    <h2>Ads</h2>
+    <button onclick="addAd()">Add Ad (Audio / Video)</button>
+    <button onclick="clearAds()">Clear All</button>
+    <ul id="ads-list"></ul>
+  </div>
+
+  <!-- PLAYER CONTROLS -->
+  <div class="section" id="controls-section">
+    <h2>Controls</h2>
+    <button onclick="startPlayer()">Start</button>
+    <button onclick="pausePlayer()">Pause</button>
+    <button onclick="resumePlayer()">Resume</button>
+    <button onclick="nextSong()">Next</button>
+    <button onclick="previousSong()">Previous</button>
+    <button onclick="resetAdTimer()">Reset Ad Timer</button>
     <br>
-
-    <input type="file" id="songUpload" accept="audio/*,video/*">
-    <button onclick="addSong()">Add Song/Video</button>
-    <input type="file" id="adUpload" accept="audio/*,video/*">
-    <button onclick="addAd()">Add Ad</button>
-    <button onclick="clearAll()">Clear All</button>
-
-    <h3>Songs:</h3>
-    <div id="songList" class="fileList"></div>
-
-    <h3>Ads:</h3>
-    <div id="adList" class="fileList"></div>
+    <label>Ad Interval (seconds): <input type="number" id="ad-interval" value="30"></label>
+    <br>
+    <label>Shuffle Songs: <input type="checkbox" id="shuffle-songs" checked></label>
+    <br>
+    <div id="ad-timer">Sponsor in: --s</div>
+  </div>
 </div>
 
-<!-- ========================
-     PLAYER PAGE
-======================== -->
-<div id="playerPage" class="container">
-    <h2>Player</h2>
-
-    <div id="videoContainer">
-        <video id="mediaPlayer" controls></video>
-    </div>
-
-    <div id="nowPlaying">Now Playing: None</div>
-    <div id="adCountdown">Sponsor in: 0s</div>
-
-    <div id="controls">
-        <button onclick="pauseResume()">Pause/Resume</button>
-        <button onclick="nextSong()">Next Song</button>
-        <button onclick="prevSong()">Previous Song</button>
-        <button onclick="resetAdTimer()">Reset Sponsor Timer</button>
-        <label>Volume:
-            <input type="range" min="0" max="1" step="0.05" onchange="setVolume(this.value)" value="1">
-        </label>
-        <button onclick="showPage('mainMenu')">Back to Menu</button>
-    </div>
-</div>
-
-<!-- ========================
-     OPTIONS PAGE
-======================== -->
-<div id="optionsPage" class="container">
-    <h2>Options</h2>
-    <label>Ad Interval (seconds):</label>
-    <input type="number" id="adIntervalInput" value="30" min="5">
-
-    <label>
-        <input type="checkbox" id="shuffleToggle" checked> Shuffle Songs
-    </label>
-
-    <label>
-        <input type="checkbox" id="repeatToggle" checked> Repeat Playlist
-    </label>
-
-    <button onclick="applyOptions()">Apply Options</button>
-    <button onclick="showPage('mainMenu')">Back to Menu</button>
+<!-- PLAYER -->
+<div id="player-container">
+  <video id="player" controls></video>
 </div>
 
 <script>
-// ========================
-// GLOBAL VARIABLES
-// ========================
 let songs = [];
 let ads = [];
 let currentSongIndex = 0;
-let currentAdIndex = 0;
-let adInterval = 30; // seconds
-let countdown = adInterval;
-let countdownTimer;
-let mediaPlayer = document.getElementById('mediaPlayer');
-let isPaused = false;
-let shuffleEnabled = true;
-let repeatEnabled = true;
+let adIntervalTime = 30000;
+let adTimer = null;
+let countdownTimer = null;
+let remainingTime = 0;
+let isPlayingAd = false;
+let player = document.getElementById('player');
+let shuffle = true;
 
-// ========================
-// PAGE NAVIGATION
-// ========================
-function showPage(pageId) {
-    document.getElementById('mainMenu').style.display = 'none';
-    document.getElementById('playerPage').style.display = 'none';
-    document.getElementById('optionsPage').style.display = 'none';
-    document.getElementById(pageId).style.display = 'block';
-}
-
-// ========================
-// ADD / DELETE FILES
-// ========================
 function addSong() {
-    let fileInput = document.getElementById('songUpload');
-    let file = fileInput.files[0];
-    if (!file) { alert('No song/video selected!'); return; }
-
-    songs.push({file: URL.createObjectURL(file), name: file.name});
-    updateSongList();
-    fileInput.value = '';
+  let input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'audio/*,video/*';
+  input.onchange = () => {
+    let file = input.files[0];
+    if(file) {
+      songs.push(URL.createObjectURL(file));
+      updateSongList();
+    }
+  }
+  input.click();
 }
 
 function addAd() {
-    let fileInput = document.getElementById('adUpload');
-    let file = fileInput.files[0];
-    if (!file) { alert('No ad selected!'); return; }
-
-    ads.push({file: URL.createObjectURL(file), name: file.name});
-    updateAdList();
-    fileInput.value = '';
+  let input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'audio/*,video/*';
+  input.onchange = () => {
+    let file = input.files[0];
+    if(file) {
+      ads.push(URL.createObjectURL(file));
+      updateAdList();
+    }
+  }
+  input.click();
 }
 
 function updateSongList() {
-    let list = document.getElementById('songList');
-    list.innerHTML = '';
-    songs.forEach((s, i) => {
-        let div = document.createElement('div');
-        div.className = 'fileItem';
-        div.textContent = `Song ${i+1}: ${s.name}`;
-        let delBtn = document.createElement('button');
-        delBtn.textContent = 'Delete';
-        delBtn.onclick = () => { songs.splice(i,1); updateSongList(); };
-        div.appendChild(delBtn);
-        list.appendChild(div);
-    });
+  let list = document.getElementById('songs-list');
+  list.innerHTML = '';
+  songs.forEach((s,i)=>{
+    let li = document.createElement('li');
+    li.innerHTML = `<span>Song ${i+1}</span> <button onclick="deleteSong(${i})">Delete</button>`;
+    list.appendChild(li);
+  });
 }
 
 function updateAdList() {
-    let list = document.getElementById('adList');
-    list.innerHTML = '';
-    ads.forEach((a, i) => {
-        let div = document.createElement('div');
-        div.className = 'fileItem';
-        div.textContent = `Ad ${i+1}: ${a.name}`;
-        let delBtn = document.createElement('button');
-        delBtn.textContent = 'Delete';
-        delBtn.onclick = () => { ads.splice(i,1); updateAdList(); };
-        div.appendChild(delBtn);
-        list.appendChild(div);
-    });
+  let list = document.getElementById('ads-list');
+  list.innerHTML = '';
+  ads.forEach((a,i)=>{
+    let li = document.createElement('li');
+    li.innerHTML = `<span>Ad ${i+1}</span> <button onclick="deleteAd(${i})">Delete</button>`;
+    list.appendChild(li);
+  });
 }
 
-function clearAll() {
-    songs = [];
-    ads = [];
-    updateSongList();
-    updateAdList();
+function deleteSong(i) {
+  songs.splice(i,1);
+  if(currentSongIndex >= songs.length) currentSongIndex = 0;
+  updateSongList();
 }
 
-// ========================
-// PLAYER LOGIC
-// ========================
+function deleteAd(i) {
+  ads.splice(i,1);
+  updateAdList();
+}
+
+function clearSongs() {
+  songs = [];
+  currentSongIndex = 0;
+  updateSongList();
+}
+
+function clearAds() {
+  ads = [];
+  updateAdList();
+}
+
 function startPlayer() {
-    if (songs.length === 0) { alert('No songs uploaded!'); return; }
-    if (ads.length === 0) { alert('No ads uploaded!'); return; }
-    currentSongIndex = 0;
-    currentAdIndex = 0;
-    countdown = adInterval;
-    playSong(currentSongIndex);
-    startCountdown();
+  if(songs.length === 0) { alert('Upload at least one song/video!'); return;}
+  if(ads.length === 0) { alert('Upload at least one ad!'); return;}
+  shuffle = document.getElementById('shuffle-songs').checked;
+  adIntervalTime = document.getElementById('ad-interval').value * 1000;
+  currentSongIndex = 0;
+  playSong();
+  startAdTimer();
 }
 
-function playSong(index) {
-    if (songs.length === 0) return;
-    let song = songs[index];
-    mediaPlayer.src = song.file;
-    mediaPlayer.play();
-    document.getElementById('nowPlaying').textContent = `Now Playing: ${song.name}`;
-    mediaPlayer.onended = () => {
-        nextSong();
-    };
-}
-
-function playAd(index) {
-    if (ads.length === 0) return;
-    let ad = ads[index];
-    mediaPlayer.src = ad.file;
-    mediaPlayer.play();
-    document.getElementById('nowPlaying').textContent = `Sponsor: ${ad.name}`;
-    mediaPlayer.onended = () => {
-        playSong(currentSongIndex);
-        countdown = adInterval;
-    };
-}
-
-// ========================
-// SONG NAVIGATION
-// ========================
-function nextSong() {
-    if (shuffleEnabled && songs.length > 1) {
-        let next = currentSongIndex;
-        while(next === currentSongIndex) {
-            next = Math.floor(Math.random() * songs.length);
-        }
-        currentSongIndex = next;
+function playSong() {
+  if(songs.length === 0) return;
+  isPlayingAd = false;
+  player.src = songs[currentSongIndex];
+  player.play().catch(e=>alert('Error playing song!'));
+  player.onended = () => {
+    if(shuffle) {
+      currentSongIndex = Math.floor(Math.random()*songs.length);
     } else {
-        currentSongIndex++;
-        if (currentSongIndex >= songs.length) {
-            if (repeatEnabled) currentSongIndex = 0;
-            else { mediaPlayer.pause(); return; }
-        }
+      currentSongIndex = (currentSongIndex+1)%songs.length;
     }
-    playSong(currentSongIndex);
+    playSong();
+  };
 }
 
-function prevSong() {
-    currentSongIndex--;
-    if (currentSongIndex < 0) currentSongIndex = songs.length-1;
-    playSong(currentSongIndex);
+function startAdTimer() {
+  clearInterval(adTimer);
+  clearInterval(countdownTimer);
+  remainingTime = adIntervalTime/1000;
+  document.getElementById('ad-timer').innerText = `Sponsor in: ${remainingTime}s`;
+  countdownTimer = setInterval(() => {
+    remainingTime--;
+    if(remainingTime<0) remainingTime=0;
+    document.getElementById('ad-timer').innerText = `Sponsor in: ${remainingTime}s`;
+  },1000);
+  adTimer = setTimeout(playAd, adIntervalTime);
 }
 
-// ========================
-// PAUSE / RESUME
-// ========================
-function pauseResume() {
-    if (!mediaPlayer.src) return;
-    if (isPaused) mediaPlayer.play();
-    else mediaPlayer.pause();
-    isPaused = !isPaused;
+function playAd() {
+  if(ads.length === 0) return;
+  isPlayingAd = true;
+  clearInterval(countdownTimer);
+  let previousTime = player.currentTime;
+  let previousSrc = player.src;
+  let adIndex = Math.floor(Math.random()*ads.length);
+  player.src = ads[adIndex];
+  player.play().catch(e=>alert('Error playing ad!'));
+  player.onended = () => {
+    // Resume song exactly where it left off
+    player.src = previousSrc;
+    player.currentTime = previousTime;
+    player.play().catch(e=>alert('Error resuming song!'));
+    isPlayingAd = false;
+    startAdTimer();
+  };
 }
 
-// ========================
-// VOLUME
-// ========================
-function setVolume(val) {
-    mediaPlayer.volume = val;
+function pausePlayer() {
+  player.pause();
+  clearTimeout(adTimer);
+  clearInterval(countdownTimer);
 }
 
-// ========================
-// AD COUNTDOWN
-// ========================
-function startCountdown() {
-    document.getElementById('adCountdown').textContent = `Sponsor in: ${countdown}s`;
-    clearInterval(countdownTimer);
-    countdownTimer = setInterval(() => {
-        countdown--;
-        if (countdown <= 0) {
-            clearInterval(countdownTimer);
-            currentAdIndex = (currentAdIndex % ads.length);
-            playAd(currentAdIndex);
-        } else {
-            document.getElementById('adCountdown').textContent = `Sponsor in: ${countdown}s`;
-        }
-    }, 1000);
+function resumePlayer() {
+  player.play();
+  if(!isPlayingAd) startAdTimer();
+}
+
+function nextSong() {
+  if(songs.length===0) return;
+  currentSongIndex = (currentSongIndex+1)%songs.length;
+  playSong();
+}
+
+function previousSong() {
+  if(songs.length===0) return;
+  currentSongIndex = (currentSongIndex-1+songs.length)%songs.length;
+  playSong();
 }
 
 function resetAdTimer() {
-    countdown = adInterval;
-    startCountdown();
+  if(isPlayingAd) return;
+  startAdTimer();
 }
-
-// ========================
-// OPTIONS
-// ========================
-function applyOptions() {
-    adInterval = parseInt(document.getElementById('adIntervalInput').value) || 30;
-    shuffleEnabled = document.getElementById('shuffleToggle').checked;
-    repeatEnabled = document.getElementById('repeatToggle').checked;
-    alert('Options applied!');
-}
-
-// ========================
-// AUTO START
-// ========================
-document.getElementById('mainMenu').addEventListener('dblclick', startPlayer);
 </script>
+
 </body>
 </html>
