@@ -2,134 +2,30 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>SkyFightPlus</title>
+<title>SkyFightPlus Player</title>
 <style>
-  /* GENERAL BODY */
-  body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: linear-gradient(135deg, #000000, #0f0f0f);
-    color: #00ff00;
-    text-align: center;
-    padding: 20px;
-  }
-
-  h1 {
-    font-size: 48px;
-    margin-bottom: 10px;
-    text-shadow: 0 0 10px #00ff00;
-  }
-
-  /* MAIN MENU BOX */
-  .menu-box {
-    background: rgba(0,255,0,0.05);
-    border: 2px solid #00ff00;
-    border-radius: 15px;
-    padding: 30px;
-    margin: 20px auto;
-    width: 600px;
-    box-shadow: 0 0 20px #00ff00;
-  }
-
-  /* SECTIONS */
-  .section {
-    margin-bottom: 20px;
-    padding: 15px;
-    border: 1px solid #00ff00;
-    border-radius: 10px;
-    background: rgba(0,255,0,0.03);
-  }
-
-  .section h2 {
-    margin-top: 0;
-    text-shadow: 0 0 5px #00ff00;
-  }
-
-  /* BUTTONS */
-  button {
-    margin: 5px;
-    padding: 10px 20px;
-    font-size: 16px;
-    border-radius: 10px;
-    border: none;
-    cursor: pointer;
-    background-color: #00ff00;
-    color: #000;
-    font-weight: bold;
-    text-shadow: 0 0 5px #000;
-    transition: 0.3s;
-  }
-
-  button:hover {
-    background-color: #00cc00;
-  }
-
-  /* LIST ITEMS */
-  ul {
-    list-style: none;
-    padding: 0;
-  }
-
-  li {
-    margin: 5px 0;
-    padding: 5px;
-    border: 1px solid #00ff00;
-    border-radius: 8px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: rgba(0,255,0,0.05);
-  }
-
-  li span {
-    flex-grow: 1;
-    text-align: left;
-    padding-left: 10px;
-  }
-
-  /* PLAYER VIDEO */
-  #player-container {
-    width: 80%;
-    max-width: 800px;
-    height: 450px;
-    margin: 20px auto;
-    background: black;
-    border: 2px solid #00ff00;
-    border-radius: 10px;
-    box-shadow: 0 0 20px #00ff00;
-    position: relative;
-  }
-
-  video, audio {
-    width: 100%;
-    height: 100%;
-    border-radius: 10px;
-    background: black;
-  }
-
-  /* TIMER DISPLAY */
-  #ad-timer {
-    margin-top: 10px;
-    font-size: 20px;
-    text-shadow: 0 0 5px #00ff00;
-  }
-
-  /* OPTIONS */
-  .options input[type=number] {
-    width: 60px;
-    text-align: center;
-    margin-left: 5px;
-  }
-
+body {
+  margin:0; font-family: Arial; background: black; color:#00ff00; text-align:center;
+}
+h1{font-size:48px;text-shadow:0 0 10px #00ff00;margin-bottom:10px;}
+.menu-box{width:600px;margin:20px auto;padding:30px;border:2px solid #00ff00;border-radius:15px;box-shadow:0 0 20px #00ff00;background: rgba(0,255,0,0.05);}
+.section{margin-bottom:20px;padding:15px;border:1px solid #00ff00;border-radius:10px;background:rgba(0,255,0,0.03);}
+.section h2{margin-top:0;text-shadow:0 0 5px #00ff00;}
+button{margin:5px;padding:10px 20px;font-size:16px;border-radius:10px;border:none;cursor:pointer;background-color:#00ff00;color:#000;font-weight:bold;text-shadow:0 0 5px #000;transition:0.3s;}
+button:hover{background-color:#00cc00;}
+ul{list-style:none;padding:0;}
+li{margin:5px 0;padding:5px;border:1px solid #00ff00;border-radius:8px;display:flex;justify-content:space-between;align-items:center;background:rgba(0,255,0,0.05);}
+li span{flex-grow:1;text-align:left;padding-left:10px;}
+#player-container{width:80%;max-width:800px;height:450px;margin:20px auto;background:black;border:2px solid #00ff00;border-radius:10px;box-shadow:0 0 20px #00ff00;position:relative;}
+video, audio{width:100%;height:100%;border-radius:10px;background:black;}
+#ad-timer{margin-top:10px;font-size:20px;text-shadow:0 0 5px #00ff00;}
+.options input[type=number]{width:60px;text-align:center;margin-left:5px;}
 </style>
 </head>
 <body>
 
 <h1>SkyFightPlus</h1>
-<p>Sponsored by SkyFightPlus</p>
-
 <div class="menu-box">
-  <!-- SONG SECTION -->
   <div class="section" id="songs-section">
     <h2>Songs / Videos</h2>
     <button onclick="addSong()">Add Song / Video</button>
@@ -137,15 +33,13 @@
     <ul id="songs-list"></ul>
   </div>
 
-  <!-- AD SECTION -->
   <div class="section" id="ads-section">
     <h2>Ads</h2>
-    <button onclick="addAd()">Add Ad (Audio / Video)</button>
+    <button onclick="addAd()">Add Ad</button>
     <button onclick="clearAds()">Clear All</button>
     <ul id="ads-list"></ul>
   </div>
 
-  <!-- PLAYER CONTROLS -->
   <div class="section" id="controls-section">
     <h2>Controls</h2>
     <button onclick="startPlayer()">Start</button>
@@ -163,7 +57,6 @@
   </div>
 </div>
 
-<!-- PLAYER -->
 <div id="player-container">
   <video id="player" controls></video>
 </div>
@@ -251,8 +144,8 @@ function clearAds() {
 }
 
 function startPlayer() {
-  if(songs.length === 0) { alert('Upload at least one song/video!'); return;}
-  if(ads.length === 0) { alert('Upload at least one ad!'); return;}
+  if(songs.length===0) { alert('Upload at least one song/video!'); return;}
+  if(ads.length===0) { alert('Upload at least one ad!'); return;}
   shuffle = document.getElementById('shuffle-songs').checked;
   adIntervalTime = document.getElementById('ad-interval').value * 1000;
   currentSongIndex = 0;
@@ -261,10 +154,10 @@ function startPlayer() {
 }
 
 function playSong() {
-  if(songs.length === 0) return;
+  if(songs.length===0) return;
   isPlayingAd = false;
   player.src = songs[currentSongIndex];
-  player.play().catch(e=>alert('Error playing song!'));
+  player.play().catch(e=>alert('Error playing song/video!'));
   player.onended = () => {
     if(shuffle) {
       currentSongIndex = Math.floor(Math.random()*songs.length);
@@ -289,7 +182,7 @@ function startAdTimer() {
 }
 
 function playAd() {
-  if(ads.length === 0) return;
+  if(ads.length===0) return;
   isPlayingAd = true;
   clearInterval(countdownTimer);
   let previousTime = player.currentTime;
@@ -298,10 +191,9 @@ function playAd() {
   player.src = ads[adIndex];
   player.play().catch(e=>alert('Error playing ad!'));
   player.onended = () => {
-    // Resume song exactly where it left off
     player.src = previousSrc;
     player.currentTime = previousTime;
-    player.play().catch(e=>alert('Error resuming song!'));
+    player.play().catch(e=>alert('Error resuming song/video!'));
     isPlayingAd = false;
     startAdTimer();
   };
@@ -335,6 +227,5 @@ function resetAdTimer() {
   startAdTimer();
 }
 </script>
-
 </body>
 </html>
