@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SkyFightPlus</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      color: white;
+      text-align: center;
+      padding: 40px;
+    }
+    h1 {
+      font-size: 50px;
+    }
+    .box {
+      background: rgba(255,255,255,0.1);
+      padding: 30px;
+      border-radius: 15px;
+      width: 400px;
+      margin: auto;
+    }
+    input, button {
+      margin: 10px;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      font-size: 16px;
+    }
+    button {
+      background: cyan;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<h1>SkyFightPlus</h1>
+<p>Sponsored by SkyFightPlus</p>
+
+<div class="box">
+  <input type="file" id="song1" accept="audio/*"><br>
+  <input type="file" id="song2" accept="audio/*"><br>
+  <input type="file" id="ad1" accept="audio/*"><br>
+
+  <input type="number" id="interval" value="30"> seconds<br>
+
+  <button onclick="start()">Start</button>
+</div>
+
+<script>
+let songs = [];
+let ad;
+let intervalTime;
+let currentIndex = 0;
+let audio = new Audio();
+let adTimer;
+
+function start() {
+  const s1 = document.getElementById("song1").files[0];
+  const s2 = document.getElementById("song2").files[0];
+  const adFile = document.getElementById("ad1").files[0];
+  intervalTime = document.getElementById("interval").value * 1000;
+
+  if (!s1 || !s2 || !adFile) {
+    alert("Upload all files first!");
+    return;
+  }
+
+  songs = [URL.createObjectURL(s1), URL.createObjectURL(s2)];
+  songs.sort(() => Math.random() - 0.5);
+  ad = URL.createObjectURL(adFile);
+
+  playSong();
+  startAdTimer();
+}
+
+function playSong() {
+  audio.src = songs[currentIndex];
+  audio.play();
+  currentIndex = (currentIndex + 1) % songs.length;
+  audio.onended = playSong;
+}
+
+function startAdTimer() {
+  adTimer = setInterval(() => {
+    audio.pause();
+    audio.src = ad;
+    audio.play();
+    audio.onended = playSong;
+  }, intervalTime);
+}
+</script>
+
+</body>
+</html>
