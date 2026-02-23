@@ -1,103 +1,149 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>SkyFightPlus</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap');
+<meta charset="UTF-8">
+<title>SkyFightPlus</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap');
 
-    body {
-      margin: 0;
-      font-family: 'Orbitron', sans-serif;
-      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-      color: #ffffff;
-      text-align: center;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
+body {
+  margin: 0;
+  font-family: 'Orbitron', sans-serif;
+  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
 
-    h1 {
-      font-size: 60px;
-      color: #00f0ff;
-      text-shadow: 0 0 15px #00f0ff, 0 0 30px #00f0ff;
-      margin-bottom: 5px;
-    }
+header {
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 40px;
+  box-shadow: 0 0 15px #00f0ff;
+}
 
-    p.subtitle {
-      font-size: 18px;
-      color: #a0e0ff;
-      margin-bottom: 30px;
-    }
+header h1 {
+  font-size: 36px;
+  color: #00f0ff;
+  text-shadow: 0 0 10px #00f0ff;
+}
 
-    .box {
-      background: rgba(0,0,0,0.5);
-      padding: 40px;
-      border-radius: 20px;
-      width: 450px;
-      max-width: 90%;
-      box-shadow: 0 0 40px rgba(0, 255, 255, 0.3);
-    }
+nav button {
+  background: #00f0ff;
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 15px;
+  margin-left: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s;
+}
 
-    input[type="file"], input[type="number"] {
-      width: 80%;
-      padding: 10px;
-      margin: 15px 0;
-      border-radius: 10px;
-      border: none;
-      font-size: 16px;
-    }
+nav button:hover {
+  background: #00d0ff;
+  box-shadow: 0 0 15px #00f0ff;
+}
 
-    button {
-      background: #00f0ff;
-      color: #000;
-      font-weight: bold;
-      font-size: 18px;
-      padding: 12px 25px;
-      margin-top: 20px;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 0 20px #00f0ff;
-    }
+main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-    button:hover {
-      background: #00d0ff;
-      box-shadow: 0 0 30px #00f0ff, 0 0 60px #00f0ff;
-      transform: scale(1.05);
-    }
+.container {
+  background: rgba(0,0,0,0.6);
+  padding: 40px;
+  border-radius: 20px;
+  width: 500px;
+  max-width: 95%;
+  box-shadow: 0 0 40px #00f0ff;
+  text-align: center;
+}
 
-    label {
-      display: block;
-      margin-top: 10px;
-      font-size: 16px;
-      color: #80dfff;
-    }
-  </style>
+input[type="file"], input[type="number"] {
+  width: 85%;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 8px;
+  border: none;
+  font-size: 16px;
+}
+
+button.main-btn {
+  background: #00f0ff;
+  color: #000;
+  font-weight: bold;
+  font-size: 18px;
+  padding: 12px 25px;
+  margin-top: 20px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 20px #00f0ff;
+}
+
+button.main-btn:hover {
+  background: #00d0ff;
+  box-shadow: 0 0 30px #00f0ff, 0 0 60px #00f0ff;
+  transform: scale(1.05);
+}
+
+#error, #success {
+  margin-top: 15px;
+  font-weight: bold;
+}
+
+#error { color: #ff4c4c; }
+#success { color: #4cffc1; }
+
+video {
+  margin-top: 15px;
+  max-width: 100%;
+  border-radius: 10px;
+  box-shadow: 0 0 20px #00f0ff;
+}
+
+</style>
 </head>
 <body>
 
-<h1>SkyFightPlus</h1>
-<p class="subtitle">Sponsored by SkyFightPlus</p>
+<header>
+  <h1>SkyFightPlus</h1>
+  <nav>
+    <button onclick="scrollToSection('player')">Player</button>
+    <button onclick="scrollToSection('about')">About</button>
+    <button onclick="scrollToSection('credits')">Credits</button>
+  </nav>
+</header>
 
-<div class="box">
-  <label>Song 1</label>
-  <input type="file" id="song1" accept="audio/*">
+<main>
+  <div class="container" id="player">
+    <h2>Upload Your Files</h2>
+    <input type="file" id="song1" accept="audio/*"><br>
+    <input type="file" id="song2" accept="audio/*"><br>
+    <input type="file" id="ad1" accept="audio/*,video/*"><br>
+    <input type="number" id="interval" value="30" min="5"> seconds<br>
+    <button class="main-btn" onclick="startPlayer()">Start Player</button>
+    <div id="error"></div>
+    <div id="success"></div>
+    <video id="videoPlayer" controls style="display:none;"></video>
+  </div>
+</main>
 
-  <label>Song 2</label>
-  <input type="file" id="song2" accept="audio/*">
+<div class="container" id="about" style="margin-top: 50px;">
+  <h2>About SkyFightPlus</h2>
+  <p>SkyFightPlus is your ultimate music + ad/video shuffle player. Play songs from your PC and insert ads/videos every X seconds automatically.</p>
+</div>
 
-  <label>Ad 1</label>
-  <input type="file" id="ad1" accept="audio/*">
-
-  <label>Ad Interval (seconds)</label>
-  <input type="number" id="interval" value="30">
-
-  <button onclick="startPlayer()">Start</button>
+<div class="container" id="credits" style="margin-top: 50px;">
+  <h2>Credits</h2>
+  <p>Made by SkyFightPlus Team</p>
 </div>
 
 <script>
@@ -107,44 +153,72 @@ let intervalTime;
 let currentIndex = 0;
 let audio = new Audio();
 let adTimer;
+let isVideo = false;
 
-function startPlayer() {
-  const s1 = document.getElementById("song1").files[0];
-  const s2 = document.getElementById("song2").files[0];
-  const adFile = document.getElementById("ad1").files[0];
-  intervalTime = document.getElementById("interval").value * 1000;
+function showMessage(msg,type='error'){
+  document.getElementById('error').innerText = '';
+  document.getElementById('success').innerText = '';
+  if(type==='error') document.getElementById('error').innerText = msg;
+  else document.getElementById('success').innerText = msg;
+}
 
-  if (!s1 || !s2 || !adFile) {
-    alert("Please upload all files first!");
-    return;
-  }
+function scrollToSection(id){
+  document.getElementById(id).scrollIntoView({behavior:'smooth'});
+}
 
-  // Shuffle songs
-  songs = [URL.createObjectURL(s1), URL.createObjectURL(s2)];
-  songs.sort(() => Math.random() - 0.5);
+function startPlayer(){
+  const s1=document.getElementById("song1").files[0];
+  const s2=document.getElementById("song2").files[0];
+  const adFile=document.getElementById("ad1").files[0];
+  const intervalInput=document.getElementById("interval").value;
 
-  // Ad
-  ad = URL.createObjectURL(adFile);
+  if(!s1||!s2||!adFile){showMessage("Upload all 3 files (2 songs + 1 ad/video)"); return;}
+  if(isNaN(intervalInput)||intervalInput<5){showMessage("Ad Interval must be ≥5 seconds"); return;}
 
-  // Start playing
+  songs=[URL.createObjectURL(s1), URL.createObjectURL(s2)];
+  songs.sort(()=>Math.random()-0.5);
+  ad=URL.createObjectURL(adFile);
+  isVideo=adFile.type.startsWith('video');
+
+  const videoPlayer=document.getElementById("videoPlayer");
+  videoPlayer.style.display='none';
+  videoPlayer.pause();
+
+  if(adTimer) clearInterval(adTimer);
+  intervalTime=intervalInput*1000;
+  currentIndex=0;
+
+  showMessage("Player started! Playing songs...","success");
   playSong();
   startAdTimer();
 }
 
-function playSong() {
-  audio.src = songs[currentIndex];
+function playSong(){
+  if(isVideo) return;
+  audio.src=songs[currentIndex];
   audio.play();
-  currentIndex = (currentIndex + 1) % songs.length;
-  audio.onended = playSong;
+  currentIndex=(currentIndex+1)%songs.length;
+  audio.onended=playSong;
 }
 
-function startAdTimer() {
-  adTimer = setInterval(() => {
+function startAdTimer(){
+  adTimer=setInterval(()=>{
     audio.pause();
-    audio.src = ad;
-    audio.play();
-    audio.onended = playSong;
-  }, intervalTime);
+    const videoPlayer=document.getElementById("videoPlayer");
+    if(isVideo){
+      videoPlayer.src=ad;
+      videoPlayer.style.display='block';
+      videoPlayer.play();
+      videoPlayer.onended=()=>{
+        videoPlayer.style.display='none';
+        playSong();
+      };
+    }else{
+      audio.src=ad;
+      audio.play();
+      audio.onended=playSong;
+    }
+  },intervalTime);
 }
 </script>
 
