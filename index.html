@@ -4,161 +4,47 @@
 <meta charset="UTF-8">
 <title>SkyFightPlus</title>
 <style>
-/* ---------- Global ---------- */
+/* ========= Fonts ========= */
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap');
 
-* {
-  box-sizing: border-box;
-}
+/* ========= Reset / Global ========= */
+*{box-sizing:border-box;}
+body{margin:0;font-family:'Orbitron',sans-serif;background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);color:#fff;display:flex;flex-direction:column;min-height:100vh;}
+h1,h2,h3,h4,h5{margin:0;padding:0;}
+button,input{border-radius:8px;font-size:16px;padding:10px;margin:8px 0;border:none;transition:all .3s;}
+button{cursor:pointer;}
 
-body {
-  margin: 0;
-  font-family: 'Orbitron', sans-serif;
-  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-  color: #fff;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
+/* ========= Header / Menu ========= */
+header{position:sticky;top:0;background:rgba(0,0,0,.85);display:flex;justify-content:space-between;align-items:center;padding:15px 50px;box-shadow:0 0 15px #00f0ff;z-index:1000;}
+header h1{font-size:36px;color:#00f0ff;text-shadow:0 0 10px #00f0ff;}
+nav button{background:#00f0ff;color:#000;margin-left:15px;padding:10px 20px;border-radius:10px;text-transform:uppercase;}
+nav button:hover{background:#00d0ff;box-shadow:0 0 15px #00f0ff,0 0 30px #00f0ff;transform:scale(1.05);}
+nav button.active{background:#00fff0;box-shadow:0 0 30px #00fff0;}
 
-/* ---------- Header / Menu ---------- */
-header {
-  position: sticky;
-  top: 0;
-  background: rgba(0,0,0,0.85);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 50px;
-  box-shadow: 0 0 15px #00f0ff;
-  z-index: 1000;
-}
+/* ========= Main Container ========= */
+main{flex:1;display:flex;justify-content:center;align-items:flex-start;padding:50px 20px;}
+.container{background:rgba(0,0,0,.7);padding:40px;border-radius:20px;width:500px;max-width:95%;box-shadow:0 0 40px #00f0ff;text-align:center;margin-bottom:50px;}
+.container h2{font-size:28px;color:#00f0ff;margin-bottom:15px;text-shadow:0 0 10px #00f0ff;}
+.container p{font-size:16px;line-height:1.5;}
 
-header h1 {
-  font-size: 36px;
-  color: #00f0ff;
-  text-shadow: 0 0 10px #00f0ff;
-  margin: 0;
-}
+/* ========= Video / Audio ========= */
+#videoPlayer{margin-top:20px;max-width:100%;border-radius:12px;box-shadow:0 0 30px #00f0ff;display:none;}
 
-nav button {
-  background: #00f0ff;
-  color: #000;
-  border: none;
-  border-radius: 10px;
-  padding: 10px 20px;
-  margin-left: 15px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: all 0.3s;
-  text-transform: uppercase;
-}
+/* ========= Buttons ========= */
+button.main-btn{background:#00f0ff;color:#000;font-weight:bold;font-size:18px;padding:12px 25px;margin-top:20px;border-radius:12px;box-shadow:0 0 20px #00f0ff;}
+button.main-btn:hover{background:#00d0ff;box-shadow:0 0 30px #00f0ff,0 0 60px #00f0ff;transform:scale(1.05);}
+input[type=number]{width:85%;}
 
-nav button:hover {
-  background: #00d0ff;
-  box-shadow: 0 0 15px #00f0ff, 0 0 30px #00f0ff;
-  transform: scale(1.05);
-}
+/* ========= Messages ========= */
+#error,#success{margin-top:15px;font-weight:bold;font-size:16px;word-break:break-word;}
+#error{color:#ff4c4c;}
+#success{color:#4cffc1;}
 
-/* ---------- Main ---------- */
-main {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 50px 20px;
-}
+/* ========= Waveform ========= */
+#waveformCanvas{margin-top:20px;width:100%;height:100px;border-radius:12px;background:rgba(0,0,0,.4);}
 
-.container {
-  background: rgba(0,0,0,0.7);
-  padding: 40px;
-  border-radius: 20px;
-  width: 500px;
-  max-width: 95%;
-  box-shadow: 0 0 40px #00f0ff;
-  text-align: center;
-  margin-bottom: 50px;
-}
-
-/* ---------- Inputs / Buttons ---------- */
-input[type="file"], input[type="number"] {
-  width: 85%;
-  padding: 10px;
-  margin: 12px 0;
-  border-radius: 8px;
-  border: none;
-  font-size: 16px;
-}
-
-button.main-btn {
-  background: #00f0ff;
-  color: #000;
-  font-weight: bold;
-  font-size: 18px;
-  padding: 12px 25px;
-  margin-top: 20px;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 0 20px #00f0ff;
-}
-
-button.main-btn:hover {
-  background: #00d0ff;
-  box-shadow: 0 0 30px #00f0ff, 0 0 60px #00f0ff;
-  transform: scale(1.05);
-}
-
-/* ---------- Messages ---------- */
-#error, #success {
-  margin-top: 15px;
-  font-weight: bold;
-  font-size: 16px;
-  word-break: break-word;
-}
-
-#error { color: #ff4c4c; }
-#success { color: #4cffc1; }
-
-/* ---------- Video Player ---------- */
-#videoPlayer {
-  margin-top: 20px;
-  max-width: 100%;
-  border-radius: 12px;
-  box-shadow: 0 0 30px #00f0ff;
-  display: none;
-}
-
-/* ---------- Sections ---------- */
-section {
-  margin-top: 50px;
-}
-
-/* ---------- About / Credits ---------- */
-.container h2 {
-  font-size: 28px;
-  color: #00f0ff;
-  margin-bottom: 15px;
-  text-shadow: 0 0 10px #00f0ff;
-}
-
-.container p {
-  font-size: 16px;
-  line-height: 1.5;
-}
-
-/* ---------- Top Menu Glow ---------- */
-nav button.active {
-  background: #00fff0;
-  box-shadow: 0 0 30px #00fff0;
-}
-
-/* ---------- Responsive ---------- */
-@media(max-width:600px){
-  header{flex-direction:column;gap:10px;}
-  main{padding:20px;}
-}
+/* ========= Responsive ========= */
+@media(max-width:600px){header{flex-direction:column;gap:10px;}main{padding:20px;}}
 </style>
 </head>
 <body>
@@ -175,24 +61,27 @@ nav button.active {
 <main>
   <div class="container" id="player">
     <h2>🎵 Upload Files</h2>
-    <label>Song 1:</label><br>
-    <input type="file" id="song1" accept="audio/*"><br>
-    <label>Song 2:</label><br>
-    <input type="file" id="song2" accept="audio/*"><br>
-    <label>Ad / Video:</label><br>
-    <input type="file" id="ad1" accept="audio/*,video/*"><br>
-    <label>Ad Interval (seconds, ≥5):</label><br>
-    <input type="number" id="interval" value="30" min="5"><br>
+    <label>Song 1:</label><br><input type="file" id="song1" accept="audio/*"><br>
+    <label>Song 2:</label><br><input type="file" id="song2" accept="audio/*"><br>
+    <label>Ad / Video:</label><br><input type="file" id="ad1" accept="audio/*,video/*"><br>
+    <label>Ad Interval (seconds, ≥5):</label><br><input type="number" id="interval" value="30" min="5"><br>
     <button class="main-btn" onclick="startPlayer()">Start Player</button>
     <div id="error"></div>
     <div id="success"></div>
     <video id="videoPlayer" controls></video>
+    <canvas id="waveformCanvas"></canvas>
+    <div style="margin-top:15px;">
+      <button onclick="pausePlayer()">Pause</button>
+      <button onclick="playPlayer()">Play</button>
+      <button onclick="nextSong()">Next</button>
+      <label>Volume: <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.8"></label>
+    </div>
   </div>
 </main>
 
 <section id="about" class="container">
   <h2>About SkyFightPlus</h2>
-  <p>SkyFightPlus is your ultimate personal music and video shuffle player. Upload two songs and an ad or video from your PC. The player will shuffle the songs and insert the ad/video at the interval you set.</p>
+  <p>SkyFightPlus is your ultimate personal music and video shuffle player. Upload two songs and an ad/video from your PC. The player will shuffle the songs and insert the ad/video at the interval you set. Pause, skip, and visualize your audio with neon waveforms.</p>
 </section>
 
 <section id="credits" class="container">
@@ -201,86 +90,165 @@ nav button.active {
 </section>
 
 <script>
+/* ======================= VARIABLES ======================= */
 let songs = [];
-let ad;
-let intervalTime;
+let ad = null;
 let currentIndex = 0;
-let audio = new Audio();
-let adTimer;
+let intervalTime = 30000;
 let isVideo = false;
+let audio = new Audio();
+let adTimer = null;
+let videoPlayer = document.getElementById('videoPlayer');
+let audioContext = null;
+let analyser = null;
+let source = null;
+let canvas = document.getElementById('waveformCanvas');
+let ctx = canvas.getContext('2d');
 
-function showMessage(msg,type='error'){
-  document.getElementById('error').innerText='';
-  document.getElementById('success').innerText='';
-  if(type==='error') document.getElementById('error').innerText=msg;
-  else document.getElementById('success').innerText=msg;
-}
-
+/* ======================= SCROLL FUNCTION ======================= */
 function scrollToSection(id){
   document.getElementById(id).scrollIntoView({behavior:'smooth'});
 }
 
+/* ======================= MESSAGE FUNCTIONS ======================= */
+function showMessage(msg,type='error'){
+  document.getElementById('error').innerText = '';
+  document.getElementById('success').innerText = '';
+  if(type === 'error') document.getElementById('error').innerText = msg;
+  else document.getElementById('success').innerText = msg;
+}
+
+/* ======================= PLAYER CONTROLS ======================= */
+function pausePlayer(){
+  if(isVideo) videoPlayer.pause();
+  else audio.pause();
+  showMessage("⏸ Paused",'success');
+}
+function playPlayer(){
+  if(isVideo) videoPlayer.play().catch(e=>showMessage("Video play error: "+e.message));
+  else audio.play().catch(e=>showMessage("Audio play error: "+e.message));
+  showMessage("▶ Playing",'success');
+}
+function nextSong(){
+  if(isVideo){videoPlayer.pause(); videoPlayer.style.display='none';}
+  currentIndex = (currentIndex+1)%songs.length;
+  playSong();
+}
+
+/* ======================= START PLAYER ======================= */
 function startPlayer(){
-  const s1=document.getElementById("song1").files[0];
-  const s2=document.getElementById("song2").files[0];
-  const adFile=document.getElementById("ad1").files[0];
-  const intervalInput=document.getElementById("interval").value;
+  let s1 = document.getElementById('song1').files[0];
+  let s2 = document.getElementById('song2').files[0];
+  let adFile = document.getElementById('ad1').files[0];
+  let intervalInput = parseInt(document.getElementById('interval').value);
 
-  if(!s1 && !s2 && !adFile){showMessage("ERROR: No files uploaded! Please upload Song 1, Song 2, and an Ad/Video."); return;}
-  if(!s1){showMessage("ERROR: Song 1 is missing!"); return;}
-  if(!s2){showMessage("ERROR: Song 2 is missing!"); return;}
-  if(!adFile){showMessage("ERROR: Ad/Video is missing!"); return;}
-  if(isNaN(intervalInput) || intervalInput<5){showMessage("ERROR: Invalid interval! Must be ≥5 seconds."); return;}
+  // ===== ERROR CHECKS =====
+  if(!s1 && !s2 && !adFile){showMessage("ERROR: No files uploaded!");return;}
+  if(!s1){showMessage("ERROR: Song 1 missing!");return;}
+  if(!s2){showMessage("ERROR: Song 2 missing!");return;}
+  if(!adFile){showMessage("ERROR: Ad/Video missing!");return;}
+  if(isNaN(intervalInput) || intervalInput<5){showMessage("ERROR: Interval must be ≥5 sec");return;}
 
-  songs=[URL.createObjectURL(s1), URL.createObjectURL(s2)];
+  // ===== SETUP FILES =====
+  songs = [URL.createObjectURL(s1), URL.createObjectURL(s2)];
   songs.sort(()=>Math.random()-0.5);
-  ad=URL.createObjectURL(adFile);
-  isVideo=adFile.type.startsWith('video');
+  ad = URL.createObjectURL(adFile);
+  isVideo = adFile.type.startsWith('video');
+  intervalTime = intervalInput*1000;
+  currentIndex = 0;
 
-  const videoPlayer=document.getElementById("videoPlayer");
-  videoPlayer.style.display='none';
-  videoPlayer.pause();
-
+  // ===== CLEAR OLD TIMERS =====
   if(adTimer) clearInterval(adTimer);
-  intervalTime=intervalInput*1000;
-  currentIndex=0;
 
-  showMessage("✅ Player started! Playing songs...",'success');
+  // ===== HIDE VIDEO =====
+  videoPlayer.style.display='none';
+
+  // ===== AUDIO CONTEXT FOR WAVEFORM =====
+  audioContext = new (window.AudioContext||window.webkitAudioContext)();
+  analyser = audioContext.createAnalyser();
+
+  // ===== START SONG & AD =====
   playSong();
   startAdTimer();
+  visualizeWaveform();
+  showMessage("✅ Player started!",'success');
 }
 
+/* ======================= PLAY SONG ======================= */
 function playSong(){
   if(isVideo) return;
-  audio.src=songs[currentIndex];
-  audio.play().catch(err=>showMessage("ERROR: Cannot play audio file. " + err.message));
-  currentIndex=(currentIndex+1)%songs.length;
-  audio.onended=playSong;
+  audio.src = songs[currentIndex];
+  audio.crossOrigin="anonymous";
+  audio.play().catch(err=>{
+    showMessage("ERROR: Cannot play audio. "+err.message);
+  });
+  currentIndex = (currentIndex+1)%songs.length;
+  audio.onended = playSong;
 }
 
+/* ======================= AD TIMER ======================= */
 function startAdTimer(){
-  adTimer=setInterval(()=>{
+  adTimer = setInterval(()=>{
     audio.pause();
-    const videoPlayer=document.getElementById("videoPlayer");
     if(isVideo){
-      videoPlayer.src=ad;
+      videoPlayer.src = ad;
       videoPlayer.style.display='block';
-      videoPlayer.play().catch(err=>showMessage("ERROR: Cannot play video file. " + err.message));
-      videoPlayer.onended=()=>{
-        videoPlayer.style.display='none';
-        playSong();
-      };
+      videoPlayer.play().catch(err=>{
+        showMessage("ERROR: Cannot play video. "+err.message);
+      });
+      videoPlayer.onended = ()=>{videoPlayer.style.display='none';playSong();}
     }else{
-      audio.src=ad;
-      audio.play().catch(err=>showMessage("ERROR: Cannot play ad audio. " + err.message));
-      audio.onended=playSong;
+      audio.src = ad;
+      audio.play().catch(err=>{
+        showMessage("ERROR: Cannot play ad audio. "+err.message);
+      });
+      audio.onended = playSong;
     }
-  },intervalTime);
+  }, intervalTime);
 }
 
-// Extra detailed messages
+/* ======================= WAVEFORM VISUALIZER ======================= */
+function visualizeWaveform(){
+  if(!audioContext) return;
+  try{
+    if(source) source.disconnect();
+    source = audioContext.createMediaElementSource(audio);
+    source.connect(analyser);
+    analyser.connect(audioContext.destination);
+    analyser.fftSize = 2048;
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+    function draw(){
+      requestAnimationFrame(draw);
+      analyser.getByteTimeDomainData(dataArray);
+      ctx.fillStyle='rgba(0,0,0,0.3)';
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = '#00f0ff';
+      ctx.beginPath();
+      let sliceWidth = canvas.width*1.0/bufferLength;
+      let x=0;
+      for(let i=0;i<bufferLength;i++){
+        let v = dataArray[i]/128.0;
+        let y = v*canvas.height/2;
+        if(i===0){ctx.moveTo(x,y);}
+        else{ctx.lineTo(x,y);}
+        x+=sliceWidth;
+      }
+      ctx.lineTo(canvas.width,canvas.height/2);
+      ctx.stroke();
+    }
+    draw();
+  }catch(e){showMessage("ERROR: Waveform visualizer failed. "+e.message);}
+}
+
+/* ======================= EVENT LISTENERS ======================= */
 audio.addEventListener('error',()=>showMessage("ERROR: Audio playback failed. Check file format."));
 videoPlayer.addEventListener('error',()=>showMessage("ERROR: Video playback failed. Check file format."));
+document.getElementById('volumeSlider').addEventListener('input',e=>{
+  audio.volume=e.target.value;
+  videoPlayer.volume=e.target.value;
+});
 </script>
 </body>
 </html>
