@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SkyFightPlus Player</title>
+<title>SkyFightPlus Pro Player</title>
 <style>
 /* ===== Body & Layout ===== */
 body {
@@ -24,18 +24,22 @@ header h1 {
   font-size: 28px;
   letter-spacing: 2px;
 }
+nav {
+  display: flex;
+  gap: 10px;
+}
 nav button {
   background: #0ff;
   color: #000;
   border: none;
-  border-radius: 8px;
-  padding: 8px 16px;
-  margin-left: 10px;
+  border-radius: 12px;
+  padding: 10px 18px;
   font-weight: bold;
   cursor: pointer;
   transition: 0.3s;
+  font-size: 14px;
 }
-nav button:hover { background: #0aa; color: #fff; transform: scale(1.05); }
+nav button:hover { background: #0aa; color: #fff; transform: scale(1.1); }
 
 main {
   display: flex;
@@ -93,6 +97,7 @@ button.start-btn {
   width: 100%;
   cursor: pointer;
   font-weight: bold;
+  margin-top: 10px;
 }
 button.start-btn:hover { background: #0aa; color: #fff; }
 
@@ -107,6 +112,18 @@ button.start-btn:hover { background: #0aa; color: #fff; }
   font-weight: bold;
   color: #0ff;
 }
+
+/* Scrollable file lists */
+#songList, #adList {
+  max-height: 150px;
+  overflow-y: auto;
+  background: rgba(255,255,255,0.1);
+  padding: 10px;
+  border-radius: 8px;
+}
+#songList p, #adList p {
+  margin: 5px 0;
+}
 </style>
 </head>
 <body>
@@ -114,7 +131,7 @@ button.start-btn:hover { background: #0aa; color: #fff; }
 <header>
   <h1>SkyFightPlus Player</h1>
   <nav>
-    <button onclick="showSection('upload')">Upload Files</button>
+    <button onclick="showSection('upload')">Add Song / Add Ad</button>
     <button onclick="showSection('player')">Player</button>
   </nav>
 </header>
@@ -123,18 +140,24 @@ button.start-btn:hover { background: #0aa; color: #fff; }
   <!-- ===== Upload Section ===== -->
   <div class="container" id="upload">
     <h2>Upload Songs & Ads</h2>
-    <div class="file-section" id="songFiles">
-      <h3>Songs (multiple allowed)</h3>
+
+    <div class="file-section">
+      <h3>Add Song</h3>
       <input type="file" id="songInput" accept="audio/*,video/*" multiple>
+      <div id="songList"></div>
     </div>
-    <div class="file-section" id="adFiles">
-      <h3>Ads (multiple allowed)</h3>
+
+    <div class="file-section">
+      <h3>Add Ad</h3>
       <input type="file" id="adInput" accept="audio/*,video/*" multiple>
+      <div id="adList"></div>
     </div>
+
     <div class="file-section">
       <label>Ad Interval (seconds): </label>
       <input type="number" id="interval" value="30" min="5">
     </div>
+
     <button class="start-btn" onclick="initPlayer()">Start Player</button>
     <p id="errorMsg"></p>
   </div>
@@ -147,8 +170,10 @@ button.start-btn:hover { background: #0aa; color: #fff; }
       <audio id="audioPlayer" controls style="display:none;"></audio>
     </div>
     <p id="currentFile">No file playing</p>
-    <button class="start-btn" onclick="pausePlayer()">Pause</button>
-    <button class="start-btn" onclick="resumePlayer()">Resume</button>
+    <div>
+      <button class="start-btn" onclick="pausePlayer()">Pause</button>
+      <button class="start-btn" onclick="resumePlayer()">Resume</button>
+    </div>
   </div>
 </main>
 
@@ -173,37 +198,50 @@ const videoPlayer = document.getElementById("videoPlayer");
 const audioPlayer = document.getElementById("audioPlayer");
 const currentFileText = document.getElementById("currentFile");
 const errorMsg = document.getElementById("errorMsg");
+const songListDiv = document.getElementById("songList");
+const adListDiv = document.getElementById("adList");
 
 function initPlayer() {
-  errorMsg.textContent = "";
-  songs = [];
-  ads = [];
-  currentSongIndex = 0;
-  currentAdIndex = 0;
-  isAdPlaying = false;
+  errorMsg.textContent="";
+  songs=[];
+  ads=[];
+  currentSongIndex=0;
+  currentAdIndex=0;
+  isAdPlaying=false;
+  songListDiv.innerHTML="";
+  adListDiv.innerHTML="";
 
   const songFiles = document.getElementById("songInput").files;
   const adFiles = document.getElementById("adInput").files;
   const intervalInput = parseInt(document.getElementById("interval").value);
 
-  if(songFiles.length===0) { errorMsg.textContent="❌ Upload at least 1 song"; return; }
-  if(adFiles.length===0) { errorMsg.textContent="❌ Upload at least 1 ad"; return; }
-  if(isNaN(intervalInput) || intervalInput<5) { errorMsg.textContent="❌ Interval must be >=5s"; return; }
+  if(songFiles.length===0){ errorMsg.textContent="❌ Upload at least 1 song"; return; }
+  if(adFiles.length===0){ errorMsg.textContent="❌ Upload at least 1 ad"; return; }
+  if(isNaN(intervalInput) || intervalInput<5){ errorMsg.textContent="❌ Interval must be >=5s"; return; }
 
   adInterval = intervalInput*1000;
 
-  for(let f of songFiles) { songs.push({url:URL.createObjectURL(f), name:f.name}); }
-  for(let f of adFiles) { ads.push({url:URL.createObjectURL(f), name:f.name}); }
+  for(let f of songFiles){
+    const obj = {url:URL.createObjectURL(f), name:f.name};
+    songs.push(obj);
+    const p = document.createElement("p"); p.textContent=obj.name; songListDiv.appendChild(p);
+  }
+
+  for(let f of adFiles){
+    const obj = {url:URL.createObjectURL(f), name:f.name};
+    ads.push(obj);
+    const p = document.createElement("p"); p.textContent=obj.name; adListDiv.appendChild(p);
+  }
 
   shuffleArray(songs);
-
   showSection('player');
   playSong();
+  if(timer) clearInterval(timer);
   timer = setInterval(playAd, adInterval);
 }
 
-/* ===== Shuffle Utility ===== */
-function shuffleArray(arr) {
+/* ===== Shuffle ===== */
+function shuffleArray(arr){
   for(let i=arr.length-1;i>0;i--){
     const j=Math.floor(Math.random()*(i+1));
     [arr[i],arr[j]]=[arr[j],arr[i]];
@@ -211,27 +249,27 @@ function shuffleArray(arr) {
 }
 
 /* ===== Play Song ===== */
-function playSong() {
+function playSong(){
   if(songs.length===0){ errorMsg.textContent="❌ No songs available"; return; }
   isAdPlaying=false;
   const song = songs[currentSongIndex];
-  playMedia(song.url, song.name, false);
+  playMedia(song.url,song.name);
   currentSongIndex=(currentSongIndex+1)%songs.length;
 }
 
 /* ===== Play Ad ===== */
-function playAd() {
+function playAd(){
   if(ads.length===0){ errorMsg.textContent="❌ No ads available"; return; }
   isAdPlaying=true;
   const ad = ads[currentAdIndex];
-  playMedia(ad.url, "AD: "+ad.name, true);
+  playMedia(ad.url,"AD: "+ad.name);
   currentAdIndex=(currentAdIndex+1)%ads.length;
 }
 
-/* ===== Play Media Utility ===== */
-function playMedia(url, displayName, isVideo) {
-  currentFileText.textContent = "Playing: " + displayName;
-  if(url.match(/\.(mp4|webm|ogg)$/i)) {
+/* ===== Play Media ===== */
+function playMedia(url, displayName){
+  currentFileText.textContent="Playing: "+displayName;
+  if(url.match(/\.(mp4|webm|ogg)$/i)){
     audioPlayer.style.display="none";
     videoPlayer.style.display="block";
     mediaPlayer=videoPlayer;
@@ -241,22 +279,17 @@ function playMedia(url, displayName, isVideo) {
     mediaPlayer=audioPlayer;
   }
   mediaPlayer.src=url;
-  mediaPlayer.play();
-  if(!isVideo && isAdPlaying===false){
-    mediaPlayer.onended=playSong;
-  } else if(!isVideo && isAdPlaying===true){
-    mediaPlayer.onended=playSong;
-  } else {
-    mediaPlayer.onended = ()=>{
-      if(isAdPlaying) playSong();
-    }
+  mediaPlayer.play().catch(e=>{
+    errorMsg.textContent="❌ Error playing file: "+e.message;
+  });
+  mediaPlayer.onended = ()=>{
+    if(!isAdPlaying) playSong();
   }
 }
 
-/* ===== Pause/Resume ===== */
-function pausePlayer() { if(mediaPlayer) mediaPlayer.pause(); }
-function resumePlayer() { if(mediaPlayer) mediaPlayer.play(); }
-
+/* ===== Pause / Resume ===== */
+function pausePlayer(){ if(mediaPlayer) mediaPlayer.pause(); }
+function resumePlayer(){ if(mediaPlayer) mediaPlayer.play(); }
 </script>
 </body>
 </html>
