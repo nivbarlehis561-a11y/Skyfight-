@@ -2,253 +2,261 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>SkyFightPlus</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SkyFightPlus Player</title>
 <style>
-/* ========= Fonts ========= */
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap');
+/* ===== Body & Layout ===== */
+body {
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+  background: #0b0f1a;
+  color: #fff;
+}
+header {
+  background: linear-gradient(90deg,#0ff,#0aa);
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+header h1 {
+  margin: 0;
+  font-size: 28px;
+  letter-spacing: 2px;
+}
+nav button {
+  background: #0ff;
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  margin-left: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+nav button:hover { background: #0aa; color: #fff; transform: scale(1.05); }
 
-/* ========= Reset / Global ========= */
-*{box-sizing:border-box;}
-body{margin:0;font-family:'Orbitron',sans-serif;background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);color:#fff;display:flex;flex-direction:column;min-height:100vh;}
-h1,h2,h3,h4,h5{margin:0;padding:0;}
-button,input{border-radius:8px;font-size:16px;padding:10px;margin:8px 0;border:none;transition:all .3s;}
-button{cursor:pointer;}
+main {
+  display: flex;
+  justify-content: center;
+  padding: 30px;
+}
 
-/* ========= Header / Menu ========= */
-header{position:sticky;top:0;background:rgba(0,0,0,.85);display:flex;justify-content:space-between;align-items:center;padding:15px 50px;box-shadow:0 0 15px #00f0ff;z-index:1000;}
-header h1{font-size:36px;color:#00f0ff;text-shadow:0 0 10px #00f0ff;}
-nav button{background:#00f0ff;color:#000;margin-left:15px;padding:10px 20px;border-radius:10px;text-transform:uppercase;}
-nav button:hover{background:#00d0ff;box-shadow:0 0 15px #00f0ff,0 0 30px #00f0ff;transform:scale(1.05);}
-nav button.active{background:#00fff0;box-shadow:0 0 30px #00fff0;}
+.container {
+  background: rgba(255,255,255,0.05);
+  padding: 25px;
+  border-radius: 15px;
+  max-width: 1000px;
+  width: 95%;
+  box-shadow: 0 0 40px #0ff;
+}
 
-/* ========= Main Container ========= */
-main{flex:1;display:flex;justify-content:center;align-items:flex-start;padding:50px 20px;}
-.container{background:rgba(0,0,0,.7);padding:40px;border-radius:20px;width:500px;max-width:95%;box-shadow:0 0 40px #00f0ff;text-align:center;margin-bottom:50px;}
-.container h2{font-size:28px;color:#00f0ff;margin-bottom:15px;text-shadow:0 0 10px #00f0ff;}
-.container p{font-size:16px;line-height:1.5;}
+#playerBox {
+  width: 100%;
+  max-height: 500px;
+  background: #000;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
 
-/* ========= Video / Audio ========= */
-#videoPlayer{margin-top:20px;max-width:100%;border-radius:12px;box-shadow:0 0 30px #00f0ff;display:none;}
+video, audio {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+}
 
-/* ========= Buttons ========= */
-button.main-btn{background:#00f0ff;color:#000;font-weight:bold;font-size:18px;padding:12px 25px;margin-top:20px;border-radius:12px;box-shadow:0 0 20px #00f0ff;}
-button.main-btn:hover{background:#00d0ff;box-shadow:0 0 30px #00f0ff,0 0 60px #00f0ff;transform:scale(1.05);}
-input[type=number]{width:85%;}
+.file-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
 
-/* ========= Messages ========= */
-#error,#success{margin-top:15px;font-weight:bold;font-size:16px;word-break:break-word;}
-#error{color:#ff4c4c;}
-#success{color:#4cffc1;}
+.file-section h3 {
+  margin: 0;
+  font-size: 18px;
+}
 
-/* ========= Waveform ========= */
-#waveformCanvas{margin-top:20px;width:100%;height:100px;border-radius:12px;background:rgba(0,0,0,.4);}
+input[type="file"], input[type="number"] {
+  padding: 8px;
+  border-radius: 8px;
+  border: none;
+  width: 95%;
+}
 
-/* ========= Responsive ========= */
-@media(max-width:600px){header{flex-direction:column;gap:10px;}main{padding:20px;}}
+button.start-btn {
+  background: #0ff;
+  font-size: 16px;
+  padding: 12px 25px;
+  width: 100%;
+  cursor: pointer;
+  font-weight: bold;
+}
+button.start-btn:hover { background: #0aa; color: #fff; }
+
+/* Error & Status */
+#errorMsg {
+  color: #f44;
+  font-weight: bold;
+  margin-top: 10px;
+}
+#currentFile {
+  margin-top: 5px;
+  font-weight: bold;
+  color: #0ff;
+}
 </style>
 </head>
 <body>
 
 <header>
-  <h1>SkyFightPlus</h1>
+  <h1>SkyFightPlus Player</h1>
   <nav>
-    <button onclick="scrollToSection('player')">Player</button>
-    <button onclick="scrollToSection('about')">About</button>
-    <button onclick="scrollToSection('credits')">Credits</button>
+    <button onclick="showSection('upload')">Upload Files</button>
+    <button onclick="showSection('player')">Player</button>
   </nav>
 </header>
 
 <main>
-  <div class="container" id="player">
-    <h2>🎵 Upload Files</h2>
-    <label>Song 1:</label><br><input type="file" id="song1" accept="audio/*"><br>
-    <label>Song 2:</label><br><input type="file" id="song2" accept="audio/*"><br>
-    <label>Ad / Video:</label><br><input type="file" id="ad1" accept="audio/*,video/*"><br>
-    <label>Ad Interval (seconds, ≥5):</label><br><input type="number" id="interval" value="30" min="5"><br>
-    <button class="main-btn" onclick="startPlayer()">Start Player</button>
-    <div id="error"></div>
-    <div id="success"></div>
-    <video id="videoPlayer" controls></video>
-    <canvas id="waveformCanvas"></canvas>
-    <div style="margin-top:15px;">
-      <button onclick="pausePlayer()">Pause</button>
-      <button onclick="playPlayer()">Play</button>
-      <button onclick="nextSong()">Next</button>
-      <label>Volume: <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.8"></label>
+  <!-- ===== Upload Section ===== -->
+  <div class="container" id="upload">
+    <h2>Upload Songs & Ads</h2>
+    <div class="file-section" id="songFiles">
+      <h3>Songs (multiple allowed)</h3>
+      <input type="file" id="songInput" accept="audio/*,video/*" multiple>
     </div>
+    <div class="file-section" id="adFiles">
+      <h3>Ads (multiple allowed)</h3>
+      <input type="file" id="adInput" accept="audio/*,video/*" multiple>
+    </div>
+    <div class="file-section">
+      <label>Ad Interval (seconds): </label>
+      <input type="number" id="interval" value="30" min="5">
+    </div>
+    <button class="start-btn" onclick="initPlayer()">Start Player</button>
+    <p id="errorMsg"></p>
+  </div>
+
+  <!-- ===== Player Section ===== -->
+  <div class="container" id="player" style="display:none;">
+    <h2>Player</h2>
+    <div id="playerBox">
+      <video id="videoPlayer" controls style="display:none;"></video>
+      <audio id="audioPlayer" controls style="display:none;"></audio>
+    </div>
+    <p id="currentFile">No file playing</p>
+    <button class="start-btn" onclick="pausePlayer()">Pause</button>
+    <button class="start-btn" onclick="resumePlayer()">Resume</button>
   </div>
 </main>
 
-<section id="about" class="container">
-  <h2>About SkyFightPlus</h2>
-  <p>SkyFightPlus is your ultimate personal music and video shuffle player. Upload two songs and an ad/video from your PC. The player will shuffle the songs and insert the ad/video at the interval you set. Pause, skip, and visualize your audio with neon waveforms.</p>
-</section>
-
-<section id="credits" class="container">
-  <h2>Credits</h2>
-  <p>Created by SkyFightPlus Team. Enjoy your music battle experience!</p>
-</section>
-
 <script>
-/* ======================= VARIABLES ======================= */
+/* ===== Sections ===== */
+function showSection(id) {
+  document.getElementById('upload').style.display = (id==='upload')?'block':'none';
+  document.getElementById('player').style.display = (id==='player')?'block':'none';
+}
+
+/* ===== Media Player Logic ===== */
 let songs = [];
-let ad = null;
-let currentIndex = 0;
-let intervalTime = 30000;
-let isVideo = false;
-let audio = new Audio();
-let adTimer = null;
-let videoPlayer = document.getElementById('videoPlayer');
-let audioContext = null;
-let analyser = null;
-let source = null;
-let canvas = document.getElementById('waveformCanvas');
-let ctx = canvas.getContext('2d');
+let ads = [];
+let currentSongIndex = 0;
+let currentAdIndex = 0;
+let adInterval = 30000;
+let timer = null;
+let isAdPlaying = false;
+let mediaPlayer;
 
-/* ======================= SCROLL FUNCTION ======================= */
-function scrollToSection(id){
-  document.getElementById(id).scrollIntoView({behavior:'smooth'});
-}
+const videoPlayer = document.getElementById("videoPlayer");
+const audioPlayer = document.getElementById("audioPlayer");
+const currentFileText = document.getElementById("currentFile");
+const errorMsg = document.getElementById("errorMsg");
 
-/* ======================= MESSAGE FUNCTIONS ======================= */
-function showMessage(msg,type='error'){
-  document.getElementById('error').innerText = '';
-  document.getElementById('success').innerText = '';
-  if(type === 'error') document.getElementById('error').innerText = msg;
-  else document.getElementById('success').innerText = msg;
-}
+function initPlayer() {
+  errorMsg.textContent = "";
+  songs = [];
+  ads = [];
+  currentSongIndex = 0;
+  currentAdIndex = 0;
+  isAdPlaying = false;
 
-/* ======================= PLAYER CONTROLS ======================= */
-function pausePlayer(){
-  if(isVideo) videoPlayer.pause();
-  else audio.pause();
-  showMessage("⏸ Paused",'success');
-}
-function playPlayer(){
-  if(isVideo) videoPlayer.play().catch(e=>showMessage("Video play error: "+e.message));
-  else audio.play().catch(e=>showMessage("Audio play error: "+e.message));
-  showMessage("▶ Playing",'success');
-}
-function nextSong(){
-  if(isVideo){videoPlayer.pause(); videoPlayer.style.display='none';}
-  currentIndex = (currentIndex+1)%songs.length;
+  const songFiles = document.getElementById("songInput").files;
+  const adFiles = document.getElementById("adInput").files;
+  const intervalInput = parseInt(document.getElementById("interval").value);
+
+  if(songFiles.length===0) { errorMsg.textContent="❌ Upload at least 1 song"; return; }
+  if(adFiles.length===0) { errorMsg.textContent="❌ Upload at least 1 ad"; return; }
+  if(isNaN(intervalInput) || intervalInput<5) { errorMsg.textContent="❌ Interval must be >=5s"; return; }
+
+  adInterval = intervalInput*1000;
+
+  for(let f of songFiles) { songs.push({url:URL.createObjectURL(f), name:f.name}); }
+  for(let f of adFiles) { ads.push({url:URL.createObjectURL(f), name:f.name}); }
+
+  shuffleArray(songs);
+
+  showSection('player');
   playSong();
+  timer = setInterval(playAd, adInterval);
 }
 
-/* ======================= START PLAYER ======================= */
-function startPlayer(){
-  let s1 = document.getElementById('song1').files[0];
-  let s2 = document.getElementById('song2').files[0];
-  let adFile = document.getElementById('ad1').files[0];
-  let intervalInput = parseInt(document.getElementById('interval').value);
-
-  // ===== ERROR CHECKS =====
-  if(!s1 && !s2 && !adFile){showMessage("ERROR: No files uploaded!");return;}
-  if(!s1){showMessage("ERROR: Song 1 missing!");return;}
-  if(!s2){showMessage("ERROR: Song 2 missing!");return;}
-  if(!adFile){showMessage("ERROR: Ad/Video missing!");return;}
-  if(isNaN(intervalInput) || intervalInput<5){showMessage("ERROR: Interval must be ≥5 sec");return;}
-
-  // ===== SETUP FILES =====
-  songs = [URL.createObjectURL(s1), URL.createObjectURL(s2)];
-  songs.sort(()=>Math.random()-0.5);
-  ad = URL.createObjectURL(adFile);
-  isVideo = adFile.type.startsWith('video');
-  intervalTime = intervalInput*1000;
-  currentIndex = 0;
-
-  // ===== CLEAR OLD TIMERS =====
-  if(adTimer) clearInterval(adTimer);
-
-  // ===== HIDE VIDEO =====
-  videoPlayer.style.display='none';
-
-  // ===== AUDIO CONTEXT FOR WAVEFORM =====
-  audioContext = new (window.AudioContext||window.webkitAudioContext)();
-  analyser = audioContext.createAnalyser();
-
-  // ===== START SONG & AD =====
-  playSong();
-  startAdTimer();
-  visualizeWaveform();
-  showMessage("✅ Player started!",'success');
+/* ===== Shuffle Utility ===== */
+function shuffleArray(arr) {
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
 }
 
-/* ======================= PLAY SONG ======================= */
-function playSong(){
-  if(isVideo) return;
-  audio.src = songs[currentIndex];
-  audio.crossOrigin="anonymous";
-  audio.play().catch(err=>{
-    showMessage("ERROR: Cannot play audio. "+err.message);
-  });
-  currentIndex = (currentIndex+1)%songs.length;
-  audio.onended = playSong;
+/* ===== Play Song ===== */
+function playSong() {
+  if(songs.length===0){ errorMsg.textContent="❌ No songs available"; return; }
+  isAdPlaying=false;
+  const song = songs[currentSongIndex];
+  playMedia(song.url, song.name, false);
+  currentSongIndex=(currentSongIndex+1)%songs.length;
 }
 
-/* ======================= AD TIMER ======================= */
-function startAdTimer(){
-  adTimer = setInterval(()=>{
-    audio.pause();
-    if(isVideo){
-      videoPlayer.src = ad;
-      videoPlayer.style.display='block';
-      videoPlayer.play().catch(err=>{
-        showMessage("ERROR: Cannot play video. "+err.message);
-      });
-      videoPlayer.onended = ()=>{videoPlayer.style.display='none';playSong();}
-    }else{
-      audio.src = ad;
-      audio.play().catch(err=>{
-        showMessage("ERROR: Cannot play ad audio. "+err.message);
-      });
-      audio.onended = playSong;
+/* ===== Play Ad ===== */
+function playAd() {
+  if(ads.length===0){ errorMsg.textContent="❌ No ads available"; return; }
+  isAdPlaying=true;
+  const ad = ads[currentAdIndex];
+  playMedia(ad.url, "AD: "+ad.name, true);
+  currentAdIndex=(currentAdIndex+1)%ads.length;
+}
+
+/* ===== Play Media Utility ===== */
+function playMedia(url, displayName, isVideo) {
+  currentFileText.textContent = "Playing: " + displayName;
+  if(url.match(/\.(mp4|webm|ogg)$/i)) {
+    audioPlayer.style.display="none";
+    videoPlayer.style.display="block";
+    mediaPlayer=videoPlayer;
+  } else {
+    videoPlayer.style.display="none";
+    audioPlayer.style.display="block";
+    mediaPlayer=audioPlayer;
+  }
+  mediaPlayer.src=url;
+  mediaPlayer.play();
+  if(!isVideo && isAdPlaying===false){
+    mediaPlayer.onended=playSong;
+  } else if(!isVideo && isAdPlaying===true){
+    mediaPlayer.onended=playSong;
+  } else {
+    mediaPlayer.onended = ()=>{
+      if(isAdPlaying) playSong();
     }
-  }, intervalTime);
+  }
 }
 
-/* ======================= WAVEFORM VISUALIZER ======================= */
-function visualizeWaveform(){
-  if(!audioContext) return;
-  try{
-    if(source) source.disconnect();
-    source = audioContext.createMediaElementSource(audio);
-    source.connect(analyser);
-    analyser.connect(audioContext.destination);
-    analyser.fftSize = 2048;
-    const bufferLength = analyser.frequencyBinCount;
-    const dataArray = new Uint8Array(bufferLength);
-    function draw(){
-      requestAnimationFrame(draw);
-      analyser.getByteTimeDomainData(dataArray);
-      ctx.fillStyle='rgba(0,0,0,0.3)';
-      ctx.fillRect(0,0,canvas.width,canvas.height);
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = '#00f0ff';
-      ctx.beginPath();
-      let sliceWidth = canvas.width*1.0/bufferLength;
-      let x=0;
-      for(let i=0;i<bufferLength;i++){
-        let v = dataArray[i]/128.0;
-        let y = v*canvas.height/2;
-        if(i===0){ctx.moveTo(x,y);}
-        else{ctx.lineTo(x,y);}
-        x+=sliceWidth;
-      }
-      ctx.lineTo(canvas.width,canvas.height/2);
-      ctx.stroke();
-    }
-    draw();
-  }catch(e){showMessage("ERROR: Waveform visualizer failed. "+e.message);}
-}
+/* ===== Pause/Resume ===== */
+function pausePlayer() { if(mediaPlayer) mediaPlayer.pause(); }
+function resumePlayer() { if(mediaPlayer) mediaPlayer.play(); }
 
-/* ======================= EVENT LISTENERS ======================= */
-audio.addEventListener('error',()=>showMessage("ERROR: Audio playback failed. Check file format."));
-videoPlayer.addEventListener('error',()=>showMessage("ERROR: Video playback failed. Check file format."));
-document.getElementById('volumeSlider').addEventListener('input',e=>{
-  audio.volume=e.target.value;
-  videoPlayer.volume=e.target.value;
-});
 </script>
 </body>
 </html>
