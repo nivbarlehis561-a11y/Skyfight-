@@ -3,187 +3,385 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SkyFightPlus Dynamic Player</title>
+<title>SkyFightPlus</title>
 <style>
-body { margin:0; font-family:Arial,sans-serif; background:#0b0f1a; color:#fff;}
-header { background: linear-gradient(90deg,#0ff,#0aa); padding:15px 30px; display:flex; justify-content:space-between; align-items:center;}
-header h1 { margin:0; font-size:28px; letter-spacing:2px; }
-nav { display:flex; gap:10px; }
-nav button { background:#0ff; color:#000; border:none; border-radius:12px; padding:10px 18px; font-weight:bold; cursor:pointer; transition:0.3s; font-size:14px; }
-nav button:hover { background:#0aa; color:#fff; transform:scale(1.1); }
-main { display:flex; justify-content:center; padding:30px; }
-.container { background: rgba(255,255,255,0.05); padding:25px; border-radius:15px; max-width:1000px; width:95%; box-shadow:0 0 40px #0ff;}
-#playerBox { width:100%; max-height:500px; background:#000; border-radius:12px; overflow:hidden; margin-bottom:20px;}
-video,audio { width:100%; height:100%; border-radius:12px; }
-.file-section { display:flex; flex-direction:column; gap:10px; margin-bottom:20px; }
-.file-section h3 { margin:0; font-size:18px; }
-input[type="file"], input[type="number"] { padding:8px; border-radius:8px; border:none; width:95%; }
-button.start-btn, button.add-btn { background:#0ff; font-size:16px; padding:12px 25px; cursor:pointer; font-weight:bold; margin-top:10px; border-radius:10px; border:none; transition:0.3s;}
-button.start-btn:hover, button.add-btn:hover { background:#0aa; color:#fff;}
-#errorMsg { color:#f44; font-weight:bold; margin-top:10px;}
-#currentFile { margin-top:5px; font-weight:bold; color:#0ff;}
-#songList,#adList { max-height:150px; overflow-y:auto; background: rgba(255,255,255,0.1); padding:10px; border-radius:8px; }
-#songList p,#adList p { margin:5px 0; }
+  /* ----- BODY & MAIN LAYOUT ----- */
+  body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #0f0f25, #1a1a40);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  header {
+    background: #01041f;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+  }
+
+  header h1 {
+    margin: 0;
+    font-size: 32px;
+    color: #00f0ff;
+    letter-spacing: 2px;
+  }
+
+  nav button {
+    margin-left: 10px;
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: none;
+    background: #00f0ff;
+    color: #01041f;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+
+  nav button:hover {
+    background: #00e1ff;
+  }
+
+  main {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 20px;
+  }
+
+  .page {
+    display: none;
+    width: 800px;
+  }
+
+  .active {
+    display: block;
+  }
+
+  .box {
+    background: rgba(255,255,255,0.05);
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0,255,255,0.2);
+  }
+
+  h2 {
+    text-align: center;
+    color: #00f0ff;
+  }
+
+  input[type="file"], input[type="number"] {
+    margin: 10px 0;
+    padding: 8px;
+    border-radius: 6px;
+    border: none;
+    width: 100%;
+  }
+
+  button.action {
+    width: 100%;
+    margin: 10px 0;
+    padding: 12px;
+    background: #00f0ff;
+    color: #01041f;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+
+  button.action:hover {
+    background: #00e1ff;
+  }
+
+  .file-list {
+    margin: 10px 0;
+  }
+
+  .file-item {
+    background: rgba(0,255,255,0.1);
+    padding: 8px;
+    border-radius: 6px;
+    margin-bottom: 5px;
+  }
+
+  .error {
+    color: #ff4d4d;
+    margin: 10px 0;
+    font-weight: bold;
+  }
+
+  .player-container {
+    margin-top: 20px;
+    text-align: center;
+  }
+
+  video, audio {
+    width: 100%;
+    max-height: 400px;
+    border-radius: 10px;
+    margin-top: 10px;
+    background: black;
+  }
+
+  .countdown {
+    margin-top: 10px;
+    font-size: 18px;
+    color: #00f0ff;
+    font-weight: bold;
+  }
+
 </style>
 </head>
 <body>
 
 <header>
-<h1>SkyFightPlus Pro Player</h1>
-<nav>
-  <button onclick="showSection('upload')">Upload</button>
-  <button onclick="showSection('player')">Player</button>
-</nav>
+  <h1>SkyFightPlus</h1>
+  <nav>
+    <button onclick="showPage('home')">Home</button>
+    <button onclick="showPage('player')">Player</button>
+    <button onclick="showPage('settings')">Settings</button>
+  </nav>
 </header>
 
 <main>
-<div class="container" id="upload">
-  <h2>Upload Songs & Ads</h2>
+  <!-- HOME PAGE -->
+  <div id="home" class="page active">
+    <div class="box">
+      <h2>Upload Media</h2>
+      <div class="file-list" id="songs-list"></div>
+      <button class="action" onclick="addSong()">Add Song/Video</button>
 
-  <div class="file-section">
-    <h3>Songs</h3>
-    <input type="file" id="songInput" accept="audio/*,video/*">
-    <button class="add-btn" onclick="addSong()">Add Another Song</button>
-    <div id="songList"></div>
+      <div class="file-list" id="ads-list"></div>
+      <button class="action" onclick="addAd()">Add Ad</button>
+
+      <div class="error" id="home-error"></div>
+    </div>
   </div>
 
-  <div class="file-section">
-    <h3>Ads</h3>
-    <input type="file" id="adInput" accept="audio/*,video/*">
-    <button class="add-btn" onclick="addAd()">Add Another Ad</button>
-    <div id="adList"></div>
+  <!-- PLAYER PAGE -->
+  <div id="player" class="page">
+    <div class="box player-container">
+      <h2>Now Playing</h2>
+      <div id="now-playing-label">Nothing yet</div>
+      <div id="player-area"></div>
+      <div class="countdown" id="countdown-label">Sponsor in: --s</div>
+
+      <button class="action" onclick="startPlayer()">Start Player</button>
+      <button class="action" onclick="skipSong()">Skip Song</button>
+      <button class="action" onclick="pauseResume()">Pause/Resume</button>
+      <button class="action" onclick="resetTimer()">Reset Timer</button>
+
+      <div class="error" id="player-error"></div>
+    </div>
   </div>
 
-  <div class="file-section">
-    <label>Ad Interval (seconds): </label>
-    <input type="number" id="interval" value="30" min="5">
+  <!-- SETTINGS PAGE -->
+  <div id="settings" class="page">
+    <div class="box">
+      <h2>Settings</h2>
+      <label>Ad Interval (seconds):</label>
+      <input type="number" id="interval" value="30" min="5">
+      <div class="error" id="settings-error"></div>
+    </div>
   </div>
-
-  <button class="start-btn" onclick="initPlayer()">Start Player</button>
-  <p id="errorMsg"></p>
-</div>
-
-<div class="container" id="player" style="display:none;">
-  <h2>Player</h2>
-  <div id="playerBox">
-    <video id="videoPlayer" controls style="display:none;"></video>
-    <audio id="audioPlayer" controls style="display:none;"></audio>
-  </div>
-  <p id="currentFile">No file playing</p>
-  <div>
-    <button class="start-btn" onclick="pausePlayer()">Pause</button>
-    <button class="start-btn" onclick="resumePlayer()">Resume</button>
-  </div>
-</div>
 </main>
 
 <script>
-/* ===== Sections ===== */
-function showSection(id){
-  document.getElementById('upload').style.display=(id==='upload')?'block':'none';
-  document.getElementById('player').style.display=(id==='player')?'block':'none';
+/* ======= PAGE NAVIGATION ======= */
+function showPage(pageId){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(pageId).classList.add('active');
 }
 
-/* ===== Media Lists ===== */
-let songs=[];
-let ads=[];
-let currentSongIndex=0;
-let currentAdIndex=0;
-let adInterval=30000;
-let timer=null;
-let isAdPlaying=false;
-let mediaPlayer;
+/* ======= GLOBAL VARIABLES ======= */
+let songs = [];
+let ads = [];
+let currentSongIndex = 0;
+let currentAdIndex = 0;
+let isPlaying = false;
+let isPaused = false;
+let adInterval = 30;
+let adTimer;
+let playerElement; 
+let nowPlayingLabel = document.getElementById('now-playing-label');
+let countdownLabel = document.getElementById('countdown-label');
+let songPausedTime = 0;
 
-const videoPlayer=document.getElementById("videoPlayer");
-const audioPlayer=document.getElementById("audioPlayer");
-const currentFileText=document.getElementById("currentFile");
-const errorMsg=document.getElementById("errorMsg");
-const songListDiv=document.getElementById("songList");
-const adListDiv=document.getElementById("adList");
-
+/* ======= ADD SONG/VIDEO ======= */
 function addSong(){
-  const input=document.getElementById("songInput");
-  const file=input.files[0];
-  if(!file){ errorMsg.textContent="❌ Select a song first"; return; }
-  const obj={url:URL.createObjectURL(file), name:file.name};
-  songs.push(obj);
-  const p=document.createElement("p"); p.textContent=obj.name; songListDiv.appendChild(p);
-  input.value="";
+  const fileInput = document.createElement('input');
+  fileInput.type = 'file';
+  fileInput.accept = 'audio/*,video/*';
+  fileInput.onchange = e => {
+    const file = e.target.files[0];
+    if(!file){return;}
+    songs.push(file);
+    updateSongList();
+  };
+  fileInput.click();
 }
 
 function addAd(){
-  const input=document.getElementById("adInput");
-  const file=input.files[0];
-  if(!file){ errorMsg.textContent="❌ Select an ad first"; return; }
-  const obj={url:URL.createObjectURL(file), name:file.name};
-  ads.push(obj);
-  const p=document.createElement("p"); p.textContent=obj.name; adListDiv.appendChild(p);
-  input.value="";
+  const fileInput = document.createElement('input');
+  fileInput.type = 'file';
+  fileInput.accept = 'audio/*,video/*';
+  fileInput.onchange = e => {
+    const file = e.target.files[0];
+    if(!file){return;}
+    ads.push(file);
+    updateAdList();
+  };
+  fileInput.click();
 }
 
-/* ===== Player ===== */
-function initPlayer(){
-  errorMsg.textContent="";
-  if(songs.length===0){ errorMsg.textContent="❌ Upload at least 1 song"; return;}
-  if(ads.length===0){ errorMsg.textContent="❌ Upload at least 1 ad"; return;}
-  const intervalInput=parseInt(document.getElementById("interval").value);
-  if(isNaN(intervalInput) || intervalInput<5){ errorMsg.textContent="❌ Interval must be >=5s"; return;}
-  adInterval=intervalInput*1000;
-  shuffleArray(songs);
-  currentSongIndex=0;
-  currentAdIndex=0;
-  isAdPlaying=false;
-  showSection('player');
-  playSong();
-  if(timer) clearInterval(timer);
-  timer=setInterval(playAd,adInterval);
+function updateSongList(){
+  const list = document.getElementById('songs-list');
+  list.innerHTML = '';
+  songs.forEach((f,i)=>{
+    const div = document.createElement('div');
+    div.className = 'file-item';
+    div.textContent = `Song ${i+1}: ${f.name}`;
+    list.appendChild(div);
+  });
 }
 
-function shuffleArray(arr){
-  for(let i=arr.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));
-    [arr[i],arr[j]]=[arr[j],arr[i]];
+function updateAdList(){
+  const list = document.getElementById('ads-list');
+  list.innerHTML = '';
+  ads.forEach((f,i)=>{
+    const div = document.createElement('div');
+    div.className = 'file-item';
+    div.textContent = `AD ${i+1}: ${f.name}`;
+    list.appendChild(div);
+  });
+}
+
+/* ======= PLAYER LOGIC ======= */
+function startPlayer(){
+  if(songs.length===0){document.getElementById('player-error').textContent="Upload at least 1 song!"; return;}
+  if(ads.length===0){document.getElementById('player-error').textContent="Upload at least 1 ad!"; return;}
+  document.getElementById('player-error').textContent='';
+  playerElement = document.getElementById('player-area');
+  adInterval = parseInt(document.getElementById('interval').value);
+  if(isNaN(adInterval)||adInterval<5){
+    document.getElementById('settings-error').textContent="Interval must be a number >=5"; return;
   }
+  document.getElementById('settings-error').textContent='';
+  isPlaying = true;
+  playSong();
+  startAdCountdown();
 }
 
 function playSong(){
-  if(songs.length===0){ errorMsg.textContent="❌ No songs available"; return;}
-  isAdPlaying=false;
-  const song=songs[currentSongIndex];
-  playMedia(song.url,song.name);
-  currentSongIndex=(currentSongIndex+1)%songs.length;
+  if(!isPlaying) return;
+  playerElement.innerHTML = '';
+  const file = songs[currentSongIndex];
+  nowPlayingLabel.textContent = `Song ${currentSongIndex+1}: ${file.name}`;
+  let media;
+  if(file.type.startsWith('video')){
+    media = document.createElement('video');
+    media.src = URL.createObjectURL(file);
+    media.controls = true;
+    media.autoplay = true;
+  } else {
+    media = document.createElement('audio');
+    media.src = URL.createObjectURL(file);
+    media.controls = true;
+    media.autoplay = true;
+  }
+  playerElement.appendChild(media);
+  media.onended = ()=>{
+    if(songs.length===1){playSong();} 
+    else {currentSongIndex = (currentSongIndex+1)%songs.length; playSong();}
+  };
+  if(isPaused){media.pause();}
+  media.currentTime = songPausedTime;
+  window.currentMedia = media; // track current media globally
+}
+
+function startAdCountdown(){
+  let timeLeft = adInterval;
+  countdownLabel.textContent = `Sponsor in: ${timeLeft}s`;
+  clearInterval(adTimer);
+  adTimer = setInterval(()=>{
+    if(!isPlaying || isPaused) return;
+    timeLeft--;
+    countdownLabel.textContent = `Sponsor in: ${timeLeft}s`;
+    if(timeLeft<=0){
+      playAd();
+      timeLeft = adInterval; // reset after ad finishes
+    }
+  },1000);
 }
 
 function playAd(){
-  if(ads.length===0){ errorMsg.textContent="❌ No ads available"; return;}
-  isAdPlaying=true;
-  const ad=ads[currentAdIndex];
-  playMedia(ad.url,"AD: "+ad.name);
-  currentAdIndex=(currentAdIndex+1)%ads.length;
-}
-
-function playMedia(url,displayName){
-  currentFileText.textContent="Playing: "+displayName;
-  if(url.match(/\.(mp4|webm|ogg)$/i)){
-    audioPlayer.style.display="none";
-    videoPlayer.style.display="block";
-    mediaPlayer=videoPlayer;
+  if(!isPlaying) return;
+  if(!window.currentMedia) return;
+  let pausedMedia = window.currentMedia;
+  songPausedTime = pausedMedia.currentTime;
+  pausedMedia.pause();
+  playerElement.innerHTML = '';
+  const adFile = ads[currentAdIndex];
+  nowPlayingLabel.textContent = `AD ${currentAdIndex+1}: ${adFile.name}`;
+  let adMedia;
+  if(adFile.type.startsWith('video')){
+    adMedia = document.createElement('video');
+    adMedia.src = URL.createObjectURL(adFile);
+    adMedia.controls = true;
+    adMedia.autoplay = true;
   } else {
-    videoPlayer.style.display="none";
-    audioPlayer.style.display="block";
-    mediaPlayer=audioPlayer;
+    adMedia = document.createElement('audio');
+    adMedia.src = URL.createObjectURL(adFile);
+    adMedia.controls = true;
+    adMedia.autoplay = true;
   }
-  mediaPlayer.src=url;
-  mediaPlayer.play().catch(e=>{ errorMsg.textContent="❌ Error playing file: "+e.message; });
-  mediaPlayer.onended=()=>{
-    if(!isAdPlaying) playSong();
+  playerElement.appendChild(adMedia);
+  adMedia.onended = ()=>{
+    currentAdIndex = (currentAdIndex+1)%ads.length;
+    pausedMedia.currentTime = songPausedTime;
+    pausedMedia.play();
+  };
+  window.currentMedia = pausedMedia;
+}
+
+/* ======= CONTROL BUTTONS ======= */
+function skipSong(){
+  if(!isPlaying) return;
+  songPausedTime = 0;
+  currentSongIndex = (currentSongIndex+1)%songs.length;
+  playSong();
+}
+
+function pauseResume(){
+  if(!isPlaying) return;
+  if(!window.currentMedia) return;
+  if(isPaused){
+    window.currentMedia.play();
+    isPaused = false;
+  } else {
+    window.currentMedia.pause();
+    isPaused = true;
   }
 }
 
-/* ===== Pause / Resume ===== */
-function pausePlayer(){ if(mediaPlayer) mediaPlayer.pause(); }
-function resumePlayer(){ if(mediaPlayer) mediaPlayer.play(); }
-</script>
+function resetTimer(){
+  startAdCountdown();
+}
 
+/* ======= INITIALIZE EMPTY LISTS ======= */
+updateSongList();
+updateAdList();
+
+</script>
 </body>
 </html>
