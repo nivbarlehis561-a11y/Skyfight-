@@ -3,244 +3,142 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SkyFightPlus Pro Player</title>
+<title>SkyFightPlus Dynamic Player</title>
 <style>
-/* ===== Body & Layout ===== */
-body {
-  margin: 0;
-  font-family: 'Arial', sans-serif;
-  background: #0b0f1a;
-  color: #fff;
-}
-header {
-  background: linear-gradient(90deg,#0ff,#0aa);
-  padding: 15px 30px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-header h1 {
-  margin: 0;
-  font-size: 28px;
-  letter-spacing: 2px;
-}
-nav {
-  display: flex;
-  gap: 10px;
-}
-nav button {
-  background: #0ff;
-  color: #000;
-  border: none;
-  border-radius: 12px;
-  padding: 10px 18px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: 0.3s;
-  font-size: 14px;
-}
-nav button:hover { background: #0aa; color: #fff; transform: scale(1.1); }
-
-main {
-  display: flex;
-  justify-content: center;
-  padding: 30px;
-}
-
-.container {
-  background: rgba(255,255,255,0.05);
-  padding: 25px;
-  border-radius: 15px;
-  max-width: 1000px;
-  width: 95%;
-  box-shadow: 0 0 40px #0ff;
-}
-
-#playerBox {
-  width: 100%;
-  max-height: 500px;
-  background: #000;
-  border-radius: 12px;
-  overflow: hidden;
-  margin-bottom: 20px;
-}
-
-video, audio {
-  width: 100%;
-  height: 100%;
-  border-radius: 12px;
-}
-
-.file-section {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-.file-section h3 {
-  margin: 0;
-  font-size: 18px;
-}
-
-input[type="file"], input[type="number"] {
-  padding: 8px;
-  border-radius: 8px;
-  border: none;
-  width: 95%;
-}
-
-button.start-btn {
-  background: #0ff;
-  font-size: 16px;
-  padding: 12px 25px;
-  width: 100%;
-  cursor: pointer;
-  font-weight: bold;
-  margin-top: 10px;
-}
-button.start-btn:hover { background: #0aa; color: #fff; }
-
-/* Error & Status */
-#errorMsg {
-  color: #f44;
-  font-weight: bold;
-  margin-top: 10px;
-}
-#currentFile {
-  margin-top: 5px;
-  font-weight: bold;
-  color: #0ff;
-}
-
-/* Scrollable file lists */
-#songList, #adList {
-  max-height: 150px;
-  overflow-y: auto;
-  background: rgba(255,255,255,0.1);
-  padding: 10px;
-  border-radius: 8px;
-}
-#songList p, #adList p {
-  margin: 5px 0;
-}
+body { margin:0; font-family:Arial,sans-serif; background:#0b0f1a; color:#fff;}
+header { background: linear-gradient(90deg,#0ff,#0aa); padding:15px 30px; display:flex; justify-content:space-between; align-items:center;}
+header h1 { margin:0; font-size:28px; letter-spacing:2px; }
+nav { display:flex; gap:10px; }
+nav button { background:#0ff; color:#000; border:none; border-radius:12px; padding:10px 18px; font-weight:bold; cursor:pointer; transition:0.3s; font-size:14px; }
+nav button:hover { background:#0aa; color:#fff; transform:scale(1.1); }
+main { display:flex; justify-content:center; padding:30px; }
+.container { background: rgba(255,255,255,0.05); padding:25px; border-radius:15px; max-width:1000px; width:95%; box-shadow:0 0 40px #0ff;}
+#playerBox { width:100%; max-height:500px; background:#000; border-radius:12px; overflow:hidden; margin-bottom:20px;}
+video,audio { width:100%; height:100%; border-radius:12px; }
+.file-section { display:flex; flex-direction:column; gap:10px; margin-bottom:20px; }
+.file-section h3 { margin:0; font-size:18px; }
+input[type="file"], input[type="number"] { padding:8px; border-radius:8px; border:none; width:95%; }
+button.start-btn, button.add-btn { background:#0ff; font-size:16px; padding:12px 25px; cursor:pointer; font-weight:bold; margin-top:10px; border-radius:10px; border:none; transition:0.3s;}
+button.start-btn:hover, button.add-btn:hover { background:#0aa; color:#fff;}
+#errorMsg { color:#f44; font-weight:bold; margin-top:10px;}
+#currentFile { margin-top:5px; font-weight:bold; color:#0ff;}
+#songList,#adList { max-height:150px; overflow-y:auto; background: rgba(255,255,255,0.1); padding:10px; border-radius:8px; }
+#songList p,#adList p { margin:5px 0; }
 </style>
 </head>
 <body>
 
 <header>
-  <h1>SkyFightPlus Player</h1>
-  <nav>
-    <button onclick="showSection('upload')">Add Song / Add Ad</button>
-    <button onclick="showSection('player')">Player</button>
-  </nav>
+<h1>SkyFightPlus Pro Player</h1>
+<nav>
+  <button onclick="showSection('upload')">Upload</button>
+  <button onclick="showSection('player')">Player</button>
+</nav>
 </header>
 
 <main>
-  <!-- ===== Upload Section ===== -->
-  <div class="container" id="upload">
-    <h2>Upload Songs & Ads</h2>
+<div class="container" id="upload">
+  <h2>Upload Songs & Ads</h2>
 
-    <div class="file-section">
-      <h3>Add Song</h3>
-      <input type="file" id="songInput" accept="audio/*,video/*" multiple>
-      <div id="songList"></div>
-    </div>
-
-    <div class="file-section">
-      <h3>Add Ad</h3>
-      <input type="file" id="adInput" accept="audio/*,video/*" multiple>
-      <div id="adList"></div>
-    </div>
-
-    <div class="file-section">
-      <label>Ad Interval (seconds): </label>
-      <input type="number" id="interval" value="30" min="5">
-    </div>
-
-    <button class="start-btn" onclick="initPlayer()">Start Player</button>
-    <p id="errorMsg"></p>
+  <div class="file-section">
+    <h3>Songs</h3>
+    <input type="file" id="songInput" accept="audio/*,video/*">
+    <button class="add-btn" onclick="addSong()">Add Another Song</button>
+    <div id="songList"></div>
   </div>
 
-  <!-- ===== Player Section ===== -->
-  <div class="container" id="player" style="display:none;">
-    <h2>Player</h2>
-    <div id="playerBox">
-      <video id="videoPlayer" controls style="display:none;"></video>
-      <audio id="audioPlayer" controls style="display:none;"></audio>
-    </div>
-    <p id="currentFile">No file playing</p>
-    <div>
-      <button class="start-btn" onclick="pausePlayer()">Pause</button>
-      <button class="start-btn" onclick="resumePlayer()">Resume</button>
-    </div>
+  <div class="file-section">
+    <h3>Ads</h3>
+    <input type="file" id="adInput" accept="audio/*,video/*">
+    <button class="add-btn" onclick="addAd()">Add Another Ad</button>
+    <div id="adList"></div>
   </div>
+
+  <div class="file-section">
+    <label>Ad Interval (seconds): </label>
+    <input type="number" id="interval" value="30" min="5">
+  </div>
+
+  <button class="start-btn" onclick="initPlayer()">Start Player</button>
+  <p id="errorMsg"></p>
+</div>
+
+<div class="container" id="player" style="display:none;">
+  <h2>Player</h2>
+  <div id="playerBox">
+    <video id="videoPlayer" controls style="display:none;"></video>
+    <audio id="audioPlayer" controls style="display:none;"></audio>
+  </div>
+  <p id="currentFile">No file playing</p>
+  <div>
+    <button class="start-btn" onclick="pausePlayer()">Pause</button>
+    <button class="start-btn" onclick="resumePlayer()">Resume</button>
+  </div>
+</div>
 </main>
 
 <script>
 /* ===== Sections ===== */
-function showSection(id) {
-  document.getElementById('upload').style.display = (id==='upload')?'block':'none';
-  document.getElementById('player').style.display = (id==='player')?'block':'none';
+function showSection(id){
+  document.getElementById('upload').style.display=(id==='upload')?'block':'none';
+  document.getElementById('player').style.display=(id==='player')?'block':'none';
 }
 
-/* ===== Media Player Logic ===== */
-let songs = [];
-let ads = [];
-let currentSongIndex = 0;
-let currentAdIndex = 0;
-let adInterval = 30000;
-let timer = null;
-let isAdPlaying = false;
+/* ===== Media Lists ===== */
+let songs=[];
+let ads=[];
+let currentSongIndex=0;
+let currentAdIndex=0;
+let adInterval=30000;
+let timer=null;
+let isAdPlaying=false;
 let mediaPlayer;
 
-const videoPlayer = document.getElementById("videoPlayer");
-const audioPlayer = document.getElementById("audioPlayer");
-const currentFileText = document.getElementById("currentFile");
-const errorMsg = document.getElementById("errorMsg");
-const songListDiv = document.getElementById("songList");
-const adListDiv = document.getElementById("adList");
+const videoPlayer=document.getElementById("videoPlayer");
+const audioPlayer=document.getElementById("audioPlayer");
+const currentFileText=document.getElementById("currentFile");
+const errorMsg=document.getElementById("errorMsg");
+const songListDiv=document.getElementById("songList");
+const adListDiv=document.getElementById("adList");
 
-function initPlayer() {
+function addSong(){
+  const input=document.getElementById("songInput");
+  const file=input.files[0];
+  if(!file){ errorMsg.textContent="❌ Select a song first"; return; }
+  const obj={url:URL.createObjectURL(file), name:file.name};
+  songs.push(obj);
+  const p=document.createElement("p"); p.textContent=obj.name; songListDiv.appendChild(p);
+  input.value="";
+}
+
+function addAd(){
+  const input=document.getElementById("adInput");
+  const file=input.files[0];
+  if(!file){ errorMsg.textContent="❌ Select an ad first"; return; }
+  const obj={url:URL.createObjectURL(file), name:file.name};
+  ads.push(obj);
+  const p=document.createElement("p"); p.textContent=obj.name; adListDiv.appendChild(p);
+  input.value="";
+}
+
+/* ===== Player ===== */
+function initPlayer(){
   errorMsg.textContent="";
-  songs=[];
-  ads=[];
+  if(songs.length===0){ errorMsg.textContent="❌ Upload at least 1 song"; return;}
+  if(ads.length===0){ errorMsg.textContent="❌ Upload at least 1 ad"; return;}
+  const intervalInput=parseInt(document.getElementById("interval").value);
+  if(isNaN(intervalInput) || intervalInput<5){ errorMsg.textContent="❌ Interval must be >=5s"; return;}
+  adInterval=intervalInput*1000;
+  shuffleArray(songs);
   currentSongIndex=0;
   currentAdIndex=0;
   isAdPlaying=false;
-  songListDiv.innerHTML="";
-  adListDiv.innerHTML="";
-
-  const songFiles = document.getElementById("songInput").files;
-  const adFiles = document.getElementById("adInput").files;
-  const intervalInput = parseInt(document.getElementById("interval").value);
-
-  if(songFiles.length===0){ errorMsg.textContent="❌ Upload at least 1 song"; return; }
-  if(adFiles.length===0){ errorMsg.textContent="❌ Upload at least 1 ad"; return; }
-  if(isNaN(intervalInput) || intervalInput<5){ errorMsg.textContent="❌ Interval must be >=5s"; return; }
-
-  adInterval = intervalInput*1000;
-
-  for(let f of songFiles){
-    const obj = {url:URL.createObjectURL(f), name:f.name};
-    songs.push(obj);
-    const p = document.createElement("p"); p.textContent=obj.name; songListDiv.appendChild(p);
-  }
-
-  for(let f of adFiles){
-    const obj = {url:URL.createObjectURL(f), name:f.name};
-    ads.push(obj);
-    const p = document.createElement("p"); p.textContent=obj.name; adListDiv.appendChild(p);
-  }
-
-  shuffleArray(songs);
   showSection('player');
   playSong();
   if(timer) clearInterval(timer);
-  timer = setInterval(playAd, adInterval);
+  timer=setInterval(playAd,adInterval);
 }
 
-/* ===== Shuffle ===== */
 function shuffleArray(arr){
   for(let i=arr.length-1;i>0;i--){
     const j=Math.floor(Math.random()*(i+1));
@@ -248,26 +146,23 @@ function shuffleArray(arr){
   }
 }
 
-/* ===== Play Song ===== */
 function playSong(){
-  if(songs.length===0){ errorMsg.textContent="❌ No songs available"; return; }
+  if(songs.length===0){ errorMsg.textContent="❌ No songs available"; return;}
   isAdPlaying=false;
-  const song = songs[currentSongIndex];
+  const song=songs[currentSongIndex];
   playMedia(song.url,song.name);
   currentSongIndex=(currentSongIndex+1)%songs.length;
 }
 
-/* ===== Play Ad ===== */
 function playAd(){
-  if(ads.length===0){ errorMsg.textContent="❌ No ads available"; return; }
+  if(ads.length===0){ errorMsg.textContent="❌ No ads available"; return;}
   isAdPlaying=true;
-  const ad = ads[currentAdIndex];
+  const ad=ads[currentAdIndex];
   playMedia(ad.url,"AD: "+ad.name);
   currentAdIndex=(currentAdIndex+1)%ads.length;
 }
 
-/* ===== Play Media ===== */
-function playMedia(url, displayName){
+function playMedia(url,displayName){
   currentFileText.textContent="Playing: "+displayName;
   if(url.match(/\.(mp4|webm|ogg)$/i)){
     audioPlayer.style.display="none";
@@ -279,10 +174,8 @@ function playMedia(url, displayName){
     mediaPlayer=audioPlayer;
   }
   mediaPlayer.src=url;
-  mediaPlayer.play().catch(e=>{
-    errorMsg.textContent="❌ Error playing file: "+e.message;
-  });
-  mediaPlayer.onended = ()=>{
+  mediaPlayer.play().catch(e=>{ errorMsg.textContent="❌ Error playing file: "+e.message; });
+  mediaPlayer.onended=()=>{
     if(!isAdPlaying) playSong();
   }
 }
@@ -291,5 +184,6 @@ function playMedia(url, displayName){
 function pausePlayer(){ if(mediaPlayer) mediaPlayer.pause(); }
 function resumePlayer(){ if(mediaPlayer) mediaPlayer.play(); }
 </script>
+
 </body>
 </html>
