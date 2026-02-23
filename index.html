@@ -4,7 +4,12 @@
 <meta charset="UTF-8">
 <title>SkyFightPlus</title>
 <style>
+/* ---------- Global ---------- */
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap');
+
+* {
+  box-sizing: border-box;
+}
 
 body {
   margin: 0;
@@ -16,59 +21,70 @@ body {
   min-height: 100vh;
 }
 
+/* ---------- Header / Menu ---------- */
 header {
-  background: rgba(0,0,0,0.7);
+  position: sticky;
+  top: 0;
+  background: rgba(0,0,0,0.85);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 40px;
+  padding: 15px 50px;
   box-shadow: 0 0 15px #00f0ff;
+  z-index: 1000;
 }
 
 header h1 {
   font-size: 36px;
   color: #00f0ff;
   text-shadow: 0 0 10px #00f0ff;
+  margin: 0;
 }
 
 nav button {
   background: #00f0ff;
   color: #000;
   border: none;
-  border-radius: 8px;
-  padding: 8px 15px;
-  margin-left: 10px;
+  border-radius: 10px;
+  padding: 10px 20px;
+  margin-left: 15px;
   cursor: pointer;
   font-weight: bold;
   transition: all 0.3s;
+  text-transform: uppercase;
 }
 
 nav button:hover {
   background: #00d0ff;
-  box-shadow: 0 0 15px #00f0ff;
+  box-shadow: 0 0 15px #00f0ff, 0 0 30px #00f0ff;
+  transform: scale(1.05);
 }
 
+/* ---------- Main ---------- */
 main {
   flex: 1;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
+  padding: 50px 20px;
 }
 
 .container {
-  background: rgba(0,0,0,0.6);
+  background: rgba(0,0,0,0.7);
   padding: 40px;
   border-radius: 20px;
   width: 500px;
   max-width: 95%;
   box-shadow: 0 0 40px #00f0ff;
   text-align: center;
+  margin-bottom: 50px;
 }
 
+/* ---------- Inputs / Buttons ---------- */
 input[type="file"], input[type="number"] {
   width: 85%;
   padding: 10px;
-  margin: 10px 0;
+  margin: 12px 0;
   border-radius: 8px;
   border: none;
   font-size: 16px;
@@ -94,21 +110,55 @@ button.main-btn:hover {
   transform: scale(1.05);
 }
 
+/* ---------- Messages ---------- */
 #error, #success {
   margin-top: 15px;
   font-weight: bold;
+  font-size: 16px;
+  word-break: break-word;
 }
 
 #error { color: #ff4c4c; }
 #success { color: #4cffc1; }
 
-video {
-  margin-top: 15px;
+/* ---------- Video Player ---------- */
+#videoPlayer {
+  margin-top: 20px;
   max-width: 100%;
-  border-radius: 10px;
-  box-shadow: 0 0 20px #00f0ff;
+  border-radius: 12px;
+  box-shadow: 0 0 30px #00f0ff;
+  display: none;
 }
 
+/* ---------- Sections ---------- */
+section {
+  margin-top: 50px;
+}
+
+/* ---------- About / Credits ---------- */
+.container h2 {
+  font-size: 28px;
+  color: #00f0ff;
+  margin-bottom: 15px;
+  text-shadow: 0 0 10px #00f0ff;
+}
+
+.container p {
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* ---------- Top Menu Glow ---------- */
+nav button.active {
+  background: #00fff0;
+  box-shadow: 0 0 30px #00fff0;
+}
+
+/* ---------- Responsive ---------- */
+@media(max-width:600px){
+  header{flex-direction:column;gap:10px;}
+  main{padding:20px;}
+}
 </style>
 </head>
 <body>
@@ -124,27 +174,31 @@ video {
 
 <main>
   <div class="container" id="player">
-    <h2>Upload Your Files</h2>
+    <h2>🎵 Upload Files</h2>
+    <label>Song 1:</label><br>
     <input type="file" id="song1" accept="audio/*"><br>
+    <label>Song 2:</label><br>
     <input type="file" id="song2" accept="audio/*"><br>
+    <label>Ad / Video:</label><br>
     <input type="file" id="ad1" accept="audio/*,video/*"><br>
-    <input type="number" id="interval" value="30" min="5"> seconds<br>
+    <label>Ad Interval (seconds, ≥5):</label><br>
+    <input type="number" id="interval" value="30" min="5"><br>
     <button class="main-btn" onclick="startPlayer()">Start Player</button>
     <div id="error"></div>
     <div id="success"></div>
-    <video id="videoPlayer" controls style="display:none;"></video>
+    <video id="videoPlayer" controls></video>
   </div>
 </main>
 
-<div class="container" id="about" style="margin-top: 50px;">
+<section id="about" class="container">
   <h2>About SkyFightPlus</h2>
-  <p>SkyFightPlus is your ultimate music + ad/video shuffle player. Play songs from your PC and insert ads/videos every X seconds automatically.</p>
-</div>
+  <p>SkyFightPlus is your ultimate personal music and video shuffle player. Upload two songs and an ad or video from your PC. The player will shuffle the songs and insert the ad/video at the interval you set.</p>
+</section>
 
-<div class="container" id="credits" style="margin-top: 50px;">
+<section id="credits" class="container">
   <h2>Credits</h2>
-  <p>Made by SkyFightPlus Team</p>
-</div>
+  <p>Created by SkyFightPlus Team. Enjoy your music battle experience!</p>
+</section>
 
 <script>
 let songs = [];
@@ -156,10 +210,10 @@ let adTimer;
 let isVideo = false;
 
 function showMessage(msg,type='error'){
-  document.getElementById('error').innerText = '';
-  document.getElementById('success').innerText = '';
-  if(type==='error') document.getElementById('error').innerText = msg;
-  else document.getElementById('success').innerText = msg;
+  document.getElementById('error').innerText='';
+  document.getElementById('success').innerText='';
+  if(type==='error') document.getElementById('error').innerText=msg;
+  else document.getElementById('success').innerText=msg;
 }
 
 function scrollToSection(id){
@@ -172,8 +226,11 @@ function startPlayer(){
   const adFile=document.getElementById("ad1").files[0];
   const intervalInput=document.getElementById("interval").value;
 
-  if(!s1||!s2||!adFile){showMessage("Upload all 3 files (2 songs + 1 ad/video)"); return;}
-  if(isNaN(intervalInput)||intervalInput<5){showMessage("Ad Interval must be ≥5 seconds"); return;}
+  if(!s1 && !s2 && !adFile){showMessage("ERROR: No files uploaded! Please upload Song 1, Song 2, and an Ad/Video."); return;}
+  if(!s1){showMessage("ERROR: Song 1 is missing!"); return;}
+  if(!s2){showMessage("ERROR: Song 2 is missing!"); return;}
+  if(!adFile){showMessage("ERROR: Ad/Video is missing!"); return;}
+  if(isNaN(intervalInput) || intervalInput<5){showMessage("ERROR: Invalid interval! Must be ≥5 seconds."); return;}
 
   songs=[URL.createObjectURL(s1), URL.createObjectURL(s2)];
   songs.sort(()=>Math.random()-0.5);
@@ -188,7 +245,7 @@ function startPlayer(){
   intervalTime=intervalInput*1000;
   currentIndex=0;
 
-  showMessage("Player started! Playing songs...","success");
+  showMessage("✅ Player started! Playing songs...",'success');
   playSong();
   startAdTimer();
 }
@@ -196,7 +253,7 @@ function startPlayer(){
 function playSong(){
   if(isVideo) return;
   audio.src=songs[currentIndex];
-  audio.play();
+  audio.play().catch(err=>showMessage("ERROR: Cannot play audio file. " + err.message));
   currentIndex=(currentIndex+1)%songs.length;
   audio.onended=playSong;
 }
@@ -208,19 +265,22 @@ function startAdTimer(){
     if(isVideo){
       videoPlayer.src=ad;
       videoPlayer.style.display='block';
-      videoPlayer.play();
+      videoPlayer.play().catch(err=>showMessage("ERROR: Cannot play video file. " + err.message));
       videoPlayer.onended=()=>{
         videoPlayer.style.display='none';
         playSong();
       };
     }else{
       audio.src=ad;
-      audio.play();
+      audio.play().catch(err=>showMessage("ERROR: Cannot play ad audio. " + err.message));
       audio.onended=playSong;
     }
   },intervalTime);
 }
-</script>
 
+// Extra detailed messages
+audio.addEventListener('error',()=>showMessage("ERROR: Audio playback failed. Check file format."));
+videoPlayer.addEventListener('error',()=>showMessage("ERROR: Video playback failed. Check file format."));
+</script>
 </body>
 </html>
