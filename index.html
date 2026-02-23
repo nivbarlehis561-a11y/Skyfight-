@@ -20,9 +20,10 @@
   }
 
   .menu {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
     margin-bottom: 20px;
   }
 
@@ -110,10 +111,11 @@
   <button onclick="addAd()">Add Ad</button>
 
   <button id="deleteBtn" onclick="deleteSelected()" disabled>Delete Selected</button>
-  <button onclick="startPlayer()">Start Player</button>
-  
-  <label>Ad Interval (sec): </label>
+
+  <label>Ad Interval (sec):</label>
   <input type="number" id="adInterval" value="30">
+
+  <button onclick="startPlayer()">Start Player</button>
 </div>
 
 <div class="playlist" id="playlist"></div>
@@ -121,8 +123,6 @@
 <div id="sponsorTimer">Sponsor in: --</div>
 
 <script>
-let songs = [];
-let ads = [];
 let playlist = [];
 let currentIndex = 0;
 let adInterval = 30;
@@ -141,8 +141,13 @@ function renderPlaylist() {
     div.textContent = `${item.type.toUpperCase()} - ${item.name}`;
     if (i === selectedIndex) div.classList.add('selected');
     div.onclick = () => {
-      selectedIndex = i;
-      document.getElementById("deleteBtn").disabled = false;
+      if (selectedIndex === i) {
+        selectedIndex = null; // unselect
+        document.getElementById("deleteBtn").disabled = true;
+      } else {
+        selectedIndex = i;
+        document.getElementById("deleteBtn").disabled = false;
+      }
       renderPlaylist();
     };
     container.appendChild(div);
@@ -182,7 +187,7 @@ function deleteSelected() {
 
 // Player start
 function startPlayer() {
-  if (playlist.length === 0) { alert("Upload at least one song and one ad!"); return; }
+  if (playlist.filter(p=>p.type==='song').length === 0) { alert("Upload at least one song!"); return; }
   adInterval = parseInt(document.getElementById("adInterval").value) * 1000;
   currentIndex = 0;
   isPlayingAd = false;
@@ -217,7 +222,10 @@ function playNext() {
 
 // Play next song only
 function playNextSong() {
-  if (playlist.filter(p=>p.type==='song').length === 0) return;
+  const songsOnly = playlist.filter(p=>p.type==='song');
+  if (songsOnly.length === 0) return;
+  if (songsOnly.length === 1) { currentIndex = playlist.indexOf(songsOnly[0]); playNext(); return; }
+  
   do {
     currentIndex = (currentIndex + 1) % playlist.length;
   } while(playlist[currentIndex].type !== 'song');
@@ -226,6 +234,7 @@ function playNextSong() {
 
 // Ad countdown
 function startAdCountdown() {
+  if (playlist.filter(p=>p.type==='ad').length === 0) { document.getElementById("sponsorTimer").textContent="Sponsor in: --"; return; }
   let remaining = adInterval/1000;
   document.getElementById("sponsorTimer").textContent = `Sponsor in: ${remaining}`;
   adTimer = setInterval(() => {
