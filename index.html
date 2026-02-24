@@ -78,10 +78,10 @@
     margin-top: 10px;
   }
 
-  video, audio {
+  video {
     width: 100%;
     max-width: 800px;
-    margin-top: 10px;
+    margin-top: 20px;
     border-radius: 10px;
     background: black;
   }
@@ -113,6 +113,9 @@
   <div class="playlist" id="playlist"></div>
 </div>
 
+<!-- SINGLE PERMANENT PLAYER -->
+<video id="mainPlayer" controls></video>
+
 <script>
 let songs = [];
 let ads = [];
@@ -120,26 +123,25 @@ let playlist = [];
 let selectedIndex = null;
 let currentSongIndex = 0;
 let adInterval = 30;
-let adTimer;
 let countdown = adInterval;
-let player;
+let adTimer;
 let isPlayingAd = false;
 let resumeTime = 0;
-let lastSongIndex = 0;
+let currentSongFile = null;
 
-const playlistDiv = document.getElementById('playlist');
-const adTimerDisplay = document.getElementById('adTimerDisplay');
-const deleteButton = document.getElementById('deleteButton');
-const intervalInput = document.getElementById('intervalInput');
+const player = document.getElementById("mainPlayer");
+const playlistDiv = document.getElementById("playlist");
+const deleteButton = document.getElementById("deleteButton");
+const intervalInput = document.getElementById("intervalInput");
+const adTimerDisplay = document.getElementById("adTimerDisplay");
 
 function addSong() {
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = 'audio/*,video/*';
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = "audio/*,video/*";
   input.onchange = e => {
-    const file = e.target.files[0];
-    if(file) {
-      songs.push(file);
+    if(e.target.files[0]) {
+      songs.push(e.target.files[0]);
       updatePlaylist();
     }
   };
@@ -147,13 +149,12 @@ function addSong() {
 }
 
 function addAd() {
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = 'audio/*,video/*';
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = "audio/*,video/*";
   input.onchange = e => {
-    const file = e.target.files[0];
-    if(file) {
-      ads.push(file);
+    if(e.target.files[0]) {
+      ads.push(e.target.files[0]);
       updatePlaylist();
     }
   };
@@ -163,7 +164,7 @@ function addAd() {
 function deleteSelected() {
   if(selectedIndex === null) return;
   const item = playlist[selectedIndex];
-  if(item.type === 'song') songs.splice(item.originalIndex,1);
+  if(item.type === "song") songs.splice(item.originalIndex,1);
   else ads.splice(item.originalIndex,1);
   selectedIndex = null;
   updatePlaylist();
@@ -172,17 +173,17 @@ function deleteSelected() {
 
 function updatePlaylist() {
   playlist = [];
-  songs.forEach((s,i)=>playlist.push({type:'song',file:s,originalIndex:i}));
-  ads.forEach((a,i)=>playlist.push({type:'ad',file:a,originalIndex:i}));
+  songs.forEach((s,i)=>playlist.push({type:"song",file:s,originalIndex:i}));
+  ads.forEach((a,i)=>playlist.push({type:"ad",file:a,originalIndex:i}));
   renderPlaylist();
 }
 
 function renderPlaylist() {
-  playlistDiv.innerHTML='';
+  playlistDiv.innerHTML="";
   playlist.forEach((item,i)=>{
-    const div=document.createElement('div');
-    div.className='playlist-item';
-    if(i===selectedIndex) div.classList.add('selected');
+    const div=document.createElement("div");
+    div.className="playlist-item";
+    if(i===selectedIndex) div.classList.add("selected");
     div.textContent=`${i+1}. ${item.type.toUpperCase()} - ${item.file.name}`;
     div.onclick=()=>{
       selectedIndex = selectedIndex===i ? null : i;
@@ -197,85 +198,57 @@ function startPlayer() {
   if(songs.length===0){ alert("No songs loaded"); return; }
   currentSongIndex=0;
   countdown=adInterval;
-  playNextSong();
+  playSong();
   startAdCountdown();
 }
 
-function playNextSong() {
-  if(currentSongIndex>=songs.length) currentSongIndex=0;
-  lastSongIndex=currentSongIndex;
-  playFile(songs[currentSongIndex], false);
+function playSong() {
+  if(currentSongIndex >= songs.length) currentSongIndex=0;
+  currentSongFile = songs[currentSongIndex];
+  player.src = URL.createObjectURL(currentSongFile);
+  player.currentTime = 0;
+  player.play();
   currentSongIndex++;
 }
 
-function playFile(file, isAd=false, resume=0) {
+player.onended = function() {
+  if(isPlayingAd) return;
+  playSong();
+};
 
-  const wasFullscreen = document.fullscreenElement !== null;
-
-  if(player){
-    player.pause();
-    player.remove();
-  }
-
-  if(file.type.startsWith('video')){
-    player=document.createElement('video');
-  } else {
-    player=document.createElement('audio');
-  }
-
-  player.src=URL.createObjectURL(file);
-  player.controls=true;
-  document.body.appendChild(player);
-
-  if(wasFullscreen){
-    player.requestFullscreen().catch(()=>{});
-  }
-
-  player.onloadedmetadata=()=>{
-    if(resume>0){
-      player.currentTime=resume;
-    }
-    player.play();
-  };
-
-  if(!isAd){
-    player.onended=playNextSong;
-  } else {
-    player.onended=()=>{
-      isPlayingAd=false;
-      playFile(songs[lastSongIndex], false, resumeTime);
-      countdown=adInterval;
-    };
-  }
-}
-
-function startAdCountdown(){
+function startAdCountdown() {
   clearInterval(adTimer);
-  adTimer=setInterval(()=>{
+  adTimer = setInterval(()=>{
     if(isPlayingAd) return;
+
     countdown--;
+    adTimerDisplay.textContent = "Sponsor in: " + countdown;
 
-    if(countdown<=0){
-      if(ads.length>0){
-        if(player){
-          resumeTime = player.currentTime;
-        }
-        isPlayingAd=true;
-        const adFile=ads[Math.floor(Math.random()*ads.length)];
-        playFile(adFile,true);
-      }
-      countdown=adInterval;
+    if(countdown <= 0 && ads.length>0) {
+      isPlayingAd = true;
+      resumeTime = player.currentTime;
+
+      const adFile = ads[Math.floor(Math.random()*ads.length)];
+      player.src = URL.createObjectURL(adFile);
+      player.currentTime = 0;
+      player.play();
+
+      player.onended = function() {
+        isPlayingAd = false;
+        player.src = URL.createObjectURL(currentSongFile);
+        player.currentTime = resumeTime;
+        player.play();
+        countdown = adInterval;
+      };
     }
-
-    adTimerDisplay.textContent="Sponsor in: "+countdown;
   },1000);
 }
 
-function resetAdTimer(){
-  countdown=adInterval;
+function resetAdTimer() {
+  countdown = adInterval;
 }
 
-function changeInterval(){
+function changeInterval() {
   const val=parseInt(intervalInput.value);
   if(val && val>0){
     adInterval=val;
