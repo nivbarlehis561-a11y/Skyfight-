@@ -78,16 +78,24 @@
     margin-top: 10px;
   }
 
-  video {
+  video, audio {
     width: 100%;
     max-width: 800px;
-    margin-top: 20px;
+    margin-top: 10px;
     border-radius: 10px;
     background: black;
   }
 
   .interval-change {
     margin-top: 10px;
+  }
+
+  .ad-note {
+    font-weight: bold;
+    color: #00ff66;
+    font-size: 18px;
+    margin-bottom: 15px;
+    text-shadow: 0 0 10px #00ff66;
   }
 </style>
 </head>
@@ -97,24 +105,21 @@
 <p>Sponsored by SkyFightPlus</p>
 
 <div class="menu">
+  <p class="ad-note">⚠️ Note: An ad might automatically play when you start the player.</p>
   <button onclick="addSong()">Add Song</button>
   <button onclick="addAd()">Add Ad</button>
   <button id="deleteButton" onclick="deleteSelected()" disabled>Delete Selected</button>
-  <button onclick="startPlayer()">Start Player</button>
+  <button onclick="startPlayer()">Start/Reload Player</button>
   <button onclick="resetAdTimer()">Reset Ad Timer</button>
 
   <div class="interval-change">
-    Change Ad Interval (seconds):
-    <input type="number" id="intervalInput" value="30" min="1" onchange="changeInterval()">
+    Change Ad Interval (seconds): <input type="number" id="intervalInput" value="30" min="1" onchange="changeInterval()">
   </div>
 
   <div class="timer" id="adTimerDisplay">Sponsor in: 0</div>
 
   <div class="playlist" id="playlist"></div>
 </div>
-
-<!-- SINGLE PERMANENT PLAYER -->
-<video id="mainPlayer" controls></video>
 
 <script>
 let songs = [];
@@ -123,25 +128,26 @@ let playlist = [];
 let selectedIndex = null;
 let currentSongIndex = 0;
 let adInterval = 30;
-let countdown = adInterval;
 let adTimer;
+let countdown = adInterval;
+let player;
 let isPlayingAd = false;
-let resumeTime = 0;
-let currentSongFile = null;
+let lastTime = 0;
+let wasFullscreen = false;
 
-const player = document.getElementById("mainPlayer");
-const playlistDiv = document.getElementById("playlist");
-const deleteButton = document.getElementById("deleteButton");
-const intervalInput = document.getElementById("intervalInput");
-const adTimerDisplay = document.getElementById("adTimerDisplay");
+const playlistDiv = document.getElementById('playlist');
+const adTimerDisplay = document.getElementById('adTimerDisplay');
+const deleteButton = document.getElementById('deleteButton');
+const intervalInput = document.getElementById('intervalInput');
 
 function addSong() {
-  const input = document.createElement("input");
-  input.type = "file";
-  input.accept = "audio/*,video/*";
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'audio/*,video/*';
   input.onchange = e => {
-    if(e.target.files[0]) {
-      songs.push(e.target.files[0]);
+    const file = e.target.files[0];
+    if(file) {
+      songs.push(file);
       updatePlaylist();
     }
   };
@@ -149,12 +155,13 @@ function addSong() {
 }
 
 function addAd() {
-  const input = document.createElement("input");
-  input.type = "file";
-  input.accept = "audio/*,video/*";
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'audio/*,video/*';
   input.onchange = e => {
-    if(e.target.files[0]) {
-      ads.push(e.target.files[0]);
+    const file = e.target.files[0];
+    if(file) {
+      ads.push(file);
       updatePlaylist();
     }
   };
@@ -164,7 +171,7 @@ function addAd() {
 function deleteSelected() {
   if(selectedIndex === null) return;
   const item = playlist[selectedIndex];
-  if(item.type === "song") songs.splice(item.originalIndex,1);
+  if(item.type === 'song') songs.splice(item.originalIndex,1);
   else ads.splice(item.originalIndex,1);
   selectedIndex = null;
   updatePlaylist();
@@ -173,75 +180,91 @@ function deleteSelected() {
 
 function updatePlaylist() {
   playlist = [];
-  songs.forEach((s,i)=>playlist.push({type:"song",file:s,originalIndex:i}));
-  ads.forEach((a,i)=>playlist.push({type:"ad",file:a,originalIndex:i}));
+  songs.forEach((s,i) => playlist.push({type:'song', file:s, originalIndex:i}));
+  ads.forEach((a,i) => playlist.push({type:'ad', file:a, originalIndex:i}));
   renderPlaylist();
 }
 
 function renderPlaylist() {
-  playlistDiv.innerHTML="";
+  playlistDiv.innerHTML = '';
   playlist.forEach((item,i)=>{
-    const div=document.createElement("div");
-    div.className="playlist-item";
-    if(i===selectedIndex) div.classList.add("selected");
-    div.textContent=`${i+1}. ${item.type.toUpperCase()} - ${item.file.name}`;
-    div.onclick=()=>{
-      selectedIndex = selectedIndex===i ? null : i;
+    const div = document.createElement('div');
+    div.className = 'playlist-item';
+    if(i === selectedIndex) div.classList.add('selected');
+    div.textContent = `${i+1}. ${item.type.toUpperCase()} - ${item.file.name}`;
+    div.onclick = () => {
+      if(selectedIndex === i) selectedIndex = null;
+      else selectedIndex = i;
       renderPlaylist();
-      deleteButton.disabled = selectedIndex===null;
+      deleteButton.disabled = selectedIndex === null;
     };
     playlistDiv.appendChild(div);
   });
 }
 
 function startPlayer() {
-  if(songs.length===0){ alert("No songs loaded"); return; }
-  currentSongIndex=0;
-  countdown=adInterval;
-  playSong();
+  if(songs.length===0) { alert('No songs loaded'); return; }
+  currentSongIndex = 0;
+  countdown = adInterval;
+  playNextSong();
   startAdCountdown();
 }
 
-function playSong() {
+function playNextSong() {
   if(currentSongIndex >= songs.length) currentSongIndex=0;
-  currentSongFile = songs[currentSongIndex];
-  player.src = URL.createObjectURL(currentSongFile);
-  player.currentTime = 0;
-  player.play();
+  const songFile = songs[currentSongIndex];
+  playFile(songFile, false);
   currentSongIndex++;
 }
 
-player.onended = function() {
-  if(isPlayingAd) return;
-  playSong();
-};
+function playFile(file, isAd=false) {
+  if(player) {
+    wasFullscreen = !!document.fullscreenElement;
+    lastTime = player.currentTime || 0;
+    player.pause(); 
+    player.remove();
+  }
+  if(file.type.startsWith('video')) {
+    player = document.createElement('video');
+    player.src = URL.createObjectURL(file);
+    player.controls = true;
+  } else {
+    player = document.createElement('audio');
+    player.src = URL.createObjectURL(file);
+    player.controls = true;
+  }
+  document.body.appendChild(player);
+  player.currentTime = isAd ? 0 : lastTime;
+  player.play();
+  if(wasFullscreen && player.requestFullscreen) {
+    player.requestFullscreen();
+  }
+  if(!isAd) {
+    player.onended = playNextSong;
+  } else {
+    player.onended = () => {
+      isPlayingAd=false;
+      playFile(songs[currentSongIndex-1], false);
+      countdown = adInterval;
+    };
+  }
+}
 
 function startAdCountdown() {
   clearInterval(adTimer);
-  adTimer = setInterval(()=>{
+  adTimer = setInterval(() => {
     if(isPlayingAd) return;
-
     countdown--;
-    adTimerDisplay.textContent = "Sponsor in: " + countdown;
-
-    if(countdown <= 0 && ads.length>0) {
-      isPlayingAd = true;
-      resumeTime = player.currentTime;
-
-      const adFile = ads[Math.floor(Math.random()*ads.length)];
-      player.src = URL.createObjectURL(adFile);
-      player.currentTime = 0;
-      player.play();
-
-      player.onended = function() {
-        isPlayingAd = false;
-        player.src = URL.createObjectURL(currentSongFile);
-        player.currentTime = resumeTime;
-        player.play();
-        countdown = adInterval;
-      };
+    if(countdown<=0) {
+      if(ads.length>0) {
+        isPlayingAd = true;
+        const adFile = ads[Math.floor(Math.random()*ads.length)];
+        playFile(adFile, true);
+      }
+      countdown = adInterval;
     }
-  },1000);
+    adTimerDisplay.textContent = 'Sponsor in: ' + countdown;
+  }, 1000);
 }
 
 function resetAdTimer() {
@@ -249,11 +272,9 @@ function resetAdTimer() {
 }
 
 function changeInterval() {
-  const val=parseInt(intervalInput.value);
-  if(val && val>0){
-    adInterval=val;
-    countdown=adInterval;
-  }
+  const val = parseInt(intervalInput.value);
+  if(val && val>0) adInterval = val;
+  countdown = adInterval;
 }
 </script>
 
