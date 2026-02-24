@@ -104,11 +104,11 @@
   <button onclick="resetAdTimer()">Reset Ad Timer</button>
 
   <div class="interval-change">
-    Change Ad Interval (seconds): <input type="number" id="intervalInput" value="30" min="1" onchange="changeInterval()">
+    Change Ad Interval (seconds): 
+    <input type="number" id="intervalInput" value="30" min="1" onchange="changeInterval()">
   </div>
 
   <div class="timer" id="adTimerDisplay">Sponsor in: 0</div>
-
   <div class="playlist" id="playlist"></div>
 </div>
 
@@ -118,18 +118,21 @@ let ads = [];
 let playlist = [];
 let selectedIndex = null;
 let currentSongIndex = 0;
-let adInterval = 30; // default seconds
+let adInterval = 30;
 let adTimer;
 let countdown = adInterval;
 let player;
 let isPlayingAd = false;
+
+// NEW resume variables
+let resumeTime = 0;
+let resumeFile = null;
 
 const playlistDiv = document.getElementById('playlist');
 const adTimerDisplay = document.getElementById('adTimerDisplay');
 const deleteButton = document.getElementById('deleteButton');
 const intervalInput = document.getElementById('intervalInput');
 
-// Add Song
 function addSong() {
   const input = document.createElement('input');
   input.type = 'file';
@@ -144,7 +147,6 @@ function addSong() {
   input.click();
 }
 
-// Add Ad
 function addAd() {
   const input = document.createElement('input');
   input.type = 'file';
@@ -159,7 +161,6 @@ function addAd() {
   input.click();
 }
 
-// Delete Selected
 function deleteSelected() {
   if(selectedIndex === null) return;
   const item = playlist[selectedIndex];
@@ -170,7 +171,6 @@ function deleteSelected() {
   deleteButton.disabled = true;
 }
 
-// Update playlist array
 function updatePlaylist() {
   playlist = [];
   songs.forEach((s,i) => playlist.push({type:'song', file:s, originalIndex:i}));
@@ -178,7 +178,6 @@ function updatePlaylist() {
   renderPlaylist();
 }
 
-// Render playlist
 function renderPlaylist() {
   playlistDiv.innerHTML = '';
   playlist.forEach((item,i)=>{
@@ -196,7 +195,6 @@ function renderPlaylist() {
   });
 }
 
-// Start Player
 function startPlayer() {
   if(songs.length===0) { alert('No songs loaded'); return; }
   currentSongIndex = 0;
@@ -205,7 +203,6 @@ function startPlayer() {
   startAdCountdown();
 }
 
-// Play next song
 function playNextSong() {
   if(currentSongIndex >= songs.length) currentSongIndex=0;
   const songFile = songs[currentSongIndex];
@@ -213,55 +210,69 @@ function playNextSong() {
   currentSongIndex++;
 }
 
-// Play file (song or ad)
 function playFile(file, isAd=false) {
-  if(player) { player.pause(); player.remove(); }
+  if(player) {
+    player.pause();
+    player.remove();
+  }
+
   if(file.type.startsWith('video')) {
     player = document.createElement('video');
-    player.src = URL.createObjectURL(file);
-    player.controls = true;
   } else {
     player = document.createElement('audio');
-    player.src = URL.createObjectURL(file);
-    player.controls = true;
   }
+
+  player.src = URL.createObjectURL(file);
+  player.controls = true;
   document.body.appendChild(player);
+
   player.play();
+
   if(!isAd) {
     player.onended = playNextSong;
   } else {
     player.onended = () => {
-      isPlayingAd=false;
-      playFile(songs[currentSongIndex-1], false);
+      isPlayingAd = false;
+
+      if(resumeFile) {
+        playFile(resumeFile, false);
+        player.currentTime = resumeTime;
+      }
+
       countdown = adInterval;
     };
   }
 }
 
-// Start Ad countdown
 function startAdCountdown() {
   clearInterval(adTimer);
   adTimer = setInterval(() => {
     if(isPlayingAd) return;
+
     countdown--;
+
     if(countdown<=0) {
-      if(ads.length>0) {
+      if(ads.length>0 && player) {
+
+        // SAVE CURRENT SONG POSITION
+        resumeTime = player.currentTime;
+        resumeFile = songs[currentSongIndex-1];
+
         isPlayingAd = true;
         const adFile = ads[Math.floor(Math.random()*ads.length)];
         playFile(adFile, true);
       }
       countdown = adInterval;
     }
+
     adTimerDisplay.textContent = 'Sponsor in: ' + countdown;
   }, 1000);
 }
 
-// Reset Ad Timer
 function resetAdTimer() {
   countdown = adInterval;
 }
 
-// Change Interval dynamically
 function changeInterval() {
   const val = parseInt(intervalInput.value);
   if(val && val>0) adInterval = val;
